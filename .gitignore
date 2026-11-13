@@ -1,0 +1,22 @@
+# Nuxt
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Generated from helix-desktop-spec (scripts/sync-spec.mjs)
+.spec
+
+# Node
+node_modules
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+.env
+.env.*
+!.env.example
