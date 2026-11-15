@@ -1,0 +1,15 @@
+.git
+.claude
+node_modules
+.nuxt
+.output
+.data
+.nitro
+.cache
+.spec
+dist
+*.log
+.env
+.env.*
+Dockerfile
+.dockerignore

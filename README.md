@@ -63,6 +63,22 @@ prerendering. To run the sync on its own: `pnpm sync-spec`.
 Each docs page links back to its source files in the spec repository, and the
 footer shows the spec commit the site was built from.
 
+## Docker
+
+The site is static: `Dockerfile` generates it and serves `.output/public`
+with nginx (unprivileged, port 8080; `docker/nginx.conf` adds gzip,
+long-lived caching for `/_nuxt/` assets, security headers, real 404s and a
+`/healthz` endpoint).
+
+```bash
+docker build -t helix-web .                      # clones helix-desktop-spec from GitHub
+docker build --build-context spec=../helix-desktop-spec -t helix-web .   # use a local spec checkout
+docker run --rm -p 8080:8080 helix-web           # http://localhost:8080
+```
+
+Build arguments: `SPEC_REF` (branch or tag of the spec, default `main`),
+`SPEC_REPO`, `NODE_IMAGE` and `NGINX_IMAGE`.
+
 ## Layout
 
 ```
