@@ -250,13 +250,16 @@ async function copyCommand() {
                 <code>helix-greeter</code> (it brings in greetd), then switch login
                 screens and restart:
               </p>
-              <pre class="terminal" aria-label="Commands to switch to the Helix login screen"><span class="prompt">$ </span>sudo systemctl disable gdm3
-<span class="prompt">$ </span>sudo systemctl enable greetd
+              <pre class="terminal" aria-label="Commands to switch to the Helix login screen"><span class="prompt">$ </span>sudo systemctl disable gdm.service
+<span class="prompt">$ </span>sudo systemctl enable --force greetd.service
 <span class="prompt">$ </span>sudo reboot</pre>
               <p class="mt-3">
-                Switch back the same way, the other way round. If the login screen
-                doesn’t appear, press Ctrl+Alt+F3 for a text login.
+                To switch back, or if the login screen doesn’t appear (press
+                Ctrl+Alt+F3 for a text login first):
               </p>
+              <pre class="terminal" aria-label="Commands to switch back to GDM"><span class="prompt">$ </span>sudo systemctl disable greetd.service
+<span class="prompt">$ </span>sudo systemctl enable --force gdm.service
+<span class="prompt">$ </span>sudo reboot</pre>
             </details>
           </div>
           <div class="column is-5-desktop">
