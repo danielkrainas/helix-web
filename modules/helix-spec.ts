@@ -4,6 +4,7 @@
 import fs from 'node:fs'
 import { defineNuxtModule, useLogger } from '@nuxt/kit'
 import { resolveSpecDir, specInfo, syncSpec } from '../scripts/sync-spec.mjs'
+import { defaultLocale, locales } from '../i18n/locales'
 
 export default defineNuxtModule({
   meta: { name: 'helix-spec' },
@@ -13,10 +14,16 @@ export default defineNuxtModule({
     const { routes } = syncSpec({ specDir }) as { routes: string[] }
 
     // Prerender every docs page explicitly: the crawler only sees links that
-    // are rendered, and collapsed sidebar groups don't render theirs.
+    // are rendered, and collapsed sidebar groups don't render theirs (nor
+    // does it follow paths that look like files, such as /docs/…/org.gnome.x).
+    // Translated sites show the same English docs under their prefix.
+    const prefixes = ['', ...locales.filter(l => l.code !== defaultLocale).map(l => `/${l.code}`)]
     nuxt.hook('nitro:config', (config) => {
       config.prerender ??= {}
-      config.prerender.routes = [...(config.prerender.routes ?? []), ...routes]
+      config.prerender.routes = [
+        ...(config.prerender.routes ?? []),
+        ...prefixes.flatMap(prefix => routes.map(route => prefix + route)),
+      ]
     })
 
     nuxt.options.runtimeConfig.public.spec = specInfo(specDir)
