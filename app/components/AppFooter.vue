@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 const { public: { spec } } = useRuntimeConfig()
 const specDate = spec.date ? new Date(spec.date).toISOString().slice(0, 10) : ''
 </script>
@@ -8,64 +9,67 @@ const specDate = spec.date ? new Date(spec.date).toISOString().slice(0, 10) : ''
     <div class="container is-widescreen">
       <div class="columns is-multiline">
         <div class="column is-12-tablet is-6-desktop">
-          <NuxtLink to="/" aria-label="Helix home">
+          <NuxtLinkLocale to="/" :aria-label="t('header.home')">
             <AppLogo />
-          </NuxtLink>
+          </NuxtLinkLocale>
           <p class="mt-3" style="max-width: 26rem">
-            A GNOME-compatible desktop environment, written in Rust. Code, apps
-            and specification are dedicated to the public domain (CC0-1.0).
+            {{ t('footer.about') }}
           </p>
-          <p v-if="spec.commit" class="mt-3 is-size-7 has-text-weak">
-            Docs built from spec
-            <a
-              v-if="spec.repoUrl"
-              :href="`${spec.repoUrl}/commit/${spec.commit}`"
-              target="_blank"
-              rel="noopener"
-              class="is-family-code"
-            >{{ spec.commit }}</a>
-            <span v-else class="is-family-code">{{ spec.commit }}</span>
-            <template v-if="specDate">
-              ({{ specDate }})
+          <i18n-t
+            v-if="spec.commit"
+            :keypath="specDate ? 'footer.specBuiltOn' : 'footer.specBuilt'"
+            tag="p"
+            class="mt-3 is-size-7 has-text-weak"
+          >
+            <template #commit>
+              <a
+                v-if="spec.repoUrl"
+                :href="`${spec.repoUrl}/commit/${spec.commit}`"
+                target="_blank"
+                rel="noopener"
+                class="is-family-code"
+              >{{ spec.commit }}</a>
+              <span v-else class="is-family-code">{{ spec.commit }}</span>
             </template>
-          </p>
+            <template #date>
+              {{ specDate }}
+            </template>
+          </i18n-t>
         </div>
-        <nav class="column is-4-tablet is-2-desktop" aria-label="Documentation">
+        <nav class="column is-4-tablet is-2-desktop" :aria-label="t('footer.docs.label')">
           <p class="footer-heading">
-            Docs
+            {{ t('footer.docs.heading') }}
           </p>
           <ul>
-            <li><NuxtLink to="/docs">Introduction</NuxtLink></li>
-            <li><NuxtLink to="/docs/scope">Scope</NuxtLink></li>
-            <li><NuxtLink to="/docs/gnome-compatibility">GNOME compatibility</NuxtLink></li>
-            <li><NuxtLink to="/docs/contracts">Contracts</NuxtLink></li>
+            <li><NuxtLinkLocale to="/docs">{{ t('footer.docs.introduction') }}</NuxtLinkLocale></li>
+            <li><NuxtLinkLocale to="/docs/scope">{{ t('footer.docs.scope') }}</NuxtLinkLocale></li>
+            <li><NuxtLinkLocale to="/docs/gnome-compatibility">{{ t('footer.docs.compatibility') }}</NuxtLinkLocale></li>
+            <li><NuxtLinkLocale to="/docs/contracts">{{ t('footer.docs.contracts') }}</NuxtLinkLocale></li>
           </ul>
         </nav>
-        <nav class="column is-4-tablet is-2-desktop" aria-label="Source code">
+        <nav class="column is-4-tablet is-2-desktop" :aria-label="t('footer.source.label')">
           <p class="footer-heading">
-            Source
+            {{ t('footer.source.heading') }}
           </p>
           <ul>
-            <li><a :href="links.desktop" target="_blank" rel="noopener">helix-desktop</a></li>
-            <li><a :href="links.apps" target="_blank" rel="noopener">helix-apps</a></li>
-            <li><a :href="links.spec" target="_blank" rel="noopener">helix-desktop-spec</a></li>
-            <li><a :href="links.web" target="_blank" rel="noopener">helix-web</a></li>
+            <li v-for="r in repos" :key="r.name">
+              <a :href="r.href" target="_blank" rel="noopener">{{ r.name }}</a>
+            </li>
           </ul>
         </nav>
-        <nav class="column is-4-tablet is-2-desktop" aria-label="Get Helix">
+        <nav class="column is-4-tablet is-2-desktop" :aria-label="t('footer.get.label')">
           <p class="footer-heading">
-            Get Helix
+            {{ t('footer.get.heading') }}
           </p>
           <ul>
-            <li><NuxtLink to="/#install">Install</NuxtLink></li>
-            <li><a :href="links.desktopReleases" target="_blank" rel="noopener">Releases</a></li>
-            <li><a :href="links.desktopIssues" target="_blank" rel="noopener">Issues</a></li>
+            <li><NuxtLinkLocale to="/#install">{{ t('footer.get.install') }}</NuxtLinkLocale></li>
+            <li><a :href="links.desktopReleases" target="_blank" rel="noopener">{{ t('footer.get.releases') }}</a></li>
+            <li><a :href="links.desktopIssues" target="_blank" rel="noopener">{{ t('footer.get.issues') }}</a></li>
           </ul>
         </nav>
       </div>
       <p class="legal">
-        GNOME is a trademark of the GNOME Foundation. Helix is an independent
-        project; it is not affiliated with or endorsed by the GNOME Foundation.
+        {{ t('footer.legal') }}
       </p>
     </div>
   </footer>

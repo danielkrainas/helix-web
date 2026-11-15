@@ -5,8 +5,8 @@ import type { ContentNavigationItem } from '@nuxt/content'
 // so they work without JavaScript; a group opens when it holds the current
 // page, and top-level groups start open.
 const props = defineProps<{ items: ContentNavigationItem[], depth?: number }>()
-const route = useRoute()
-const current = computed(() => route.path.replace(/\/$/, '') || '/')
+const basePath = useBasePath()
+const current = computed(() => basePath.value.replace(/\/$/, '') || '/')
 
 function contains(item: ContentNavigationItem): boolean {
   return item.path === current.value || !!item.children?.some(contains)
@@ -26,14 +26,14 @@ function isOpen(item: ContentNavigationItem) {
         </summary>
         <DocsNavList :items="item.children" :depth="(depth ?? 0) + 1" />
       </details>
-      <NuxtLink
+      <NuxtLinkLocale
         v-else
         :to="item.path"
         :class="{ 'is-active': item.path === current }"
         :aria-current="item.path === current ? 'page' : undefined"
       >
         {{ item.title }}
-      </NuxtLink>
+      </NuxtLinkLocale>
     </li>
   </ul>
 </template>

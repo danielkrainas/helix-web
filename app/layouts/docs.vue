@@ -2,7 +2,11 @@
 import type { ContentNavigationItem } from '@nuxt/content'
 
 const navigation = inject<Ref<ContentNavigationItem[] | undefined>>('navigation')
-const docsTree = computed(() => docsNavigation(navigation?.value))
+const { t } = useI18n()
+const docsTree = computed(() => docsNavigation(navigation?.value, {
+  introduction: t('docs.introduction'),
+  overview: t('docs.overview'),
+}))
 
 // Pages without children go in the first ("Specification") block; groups
 // with children each get a menu label of their own.
@@ -27,7 +31,7 @@ watch(() => route.path, () => { menuOpen.value = false })
         >
           <span class="icon-text">
             <span class="icon"><Icon name="lucide:book-open" /></span>
-            <span>Documentation menu</span>
+            <span>{{ t('docs.menuToggle') }}</span>
           </span>
           <span class="icon toggle-chevron" :class="{ 'is-open': menuOpen }"><Icon name="lucide:chevron-down" /></span>
         </button>
@@ -35,10 +39,10 @@ watch(() => route.path, () => { menuOpen.value = false })
           id="docs-sidebar"
           class="menu docs-sidebar"
           :class="{ 'is-hidden-touch': !menuOpen }"
-          aria-label="Documentation"
+          :aria-label="t('docs.sidebarLabel')"
         >
           <p class="menu-label">
-            Specification
+            {{ t('docs.specification') }}
           </p>
           <DocsNavList :items="topPages" />
           <template v-for="group in groups" :key="group.path">

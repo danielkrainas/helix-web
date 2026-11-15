@@ -5,8 +5,12 @@ import type { ContentNavigationItem } from '@nuxt/content'
  * - drops the "/docs" wrapper node
  * - a directory whose only page is its README becomes a plain link
  * - otherwise the README page is listed first as "Overview"
+ * `labels` holds the (translated) titles of the two pages the spec doesn't name.
  */
-export function docsNavigation(navigation: ContentNavigationItem[] | null | undefined): ContentNavigationItem[] {
+export function docsNavigation(
+  navigation: ContentNavigationItem[] | null | undefined,
+  labels: { introduction: string, overview: string },
+): ContentNavigationItem[] {
   const root = navigation?.find(i => i.path === '/docs')
   if (!root) return []
 
@@ -17,10 +21,10 @@ export function docsNavigation(navigation: ContentNavigationItem[] | null | unde
     if (index && children.length === 1) return { ...item, children: undefined, page: undefined }
     return {
       ...item,
-      children: children.map(c => (c === index ? { ...c, title: 'Overview', exact: true } : c)),
+      children: children.map(c => (c === index ? { ...c, title: labels.overview, exact: true } : c)),
     }
   }
 
   return (root.children ?? []).map(fix).map(item =>
-    item.path === '/docs' ? { ...item, title: 'Introduction', exact: true } : item)
+    item.path === '/docs' ? { ...item, title: labels.introduction, exact: true } : item)
 }

@@ -1,26 +1,35 @@
 <script setup lang="ts">
+import { defaultLocale } from '~~/i18n/locales'
+
 definePageMeta({ layout: 'docs' })
 
 const route = useRoute()
+const { t, locale } = useI18n()
 const { public: { spec } } = useRuntimeConfig()
 
-const path = computed(() => route.path.replace(/\/$/, '') || '/docs')
+// The docs come from the spec and exist in English only, so the content path
+// is built from the slug and is the same under every locale prefix.
+const path = computed(() => {
+  const slug = route.params.slug
+  const parts = (Array.isArray(slug) ? slug : [slug]).filter(Boolean)
+  return ['/docs', ...parts].join('/')
+})
 
 const { data: page } = await useAsyncData(`docs:${path.value}`, () =>
   queryCollection('docs').path(path.value).first())
 if (!page.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
+  throw createError({ statusCode: 404, statusMessage: t('docs.notFound'), fatal: true })
 }
 
 const { data: surround } = await useAsyncData(`docs-surround:${path.value}`, () =>
   queryCollectionItemSurroundings('docs', path.value, { fields: ['description'] }))
 
 const kindTag: Record<string, string> = {
-  dbus: 'D-Bus interface',
-  gsettings: 'GSettings',
-  wayland: 'Wayland',
-  extensions: 'Extensions API',
-  proposal: 'Proposal',
+  dbus: 'docs.kind.dbus',
+  gsettings: 'docs.kind.gsettings',
+  wayland: 'docs.kind.wayland',
+  extensions: 'docs.kind.extensions',
+  proposal: 'docs.kind.proposal',
 }
 
 const sourceLinks = computed(() => (page.value?.sources ?? []).map(file => ({
@@ -76,34 +85,45 @@ useSeoMeta({
   <div v-if="page" class="columns is-variable is-6-widescreen">
     <article class="column" style="min-width: 0">
       <header class="docs-header">
-        <nav v-if="crumbs.length" class="breadcrumb mb-3" aria-label="Breadcrumb">
+        <nav v-if="crumbs.length" class="breadcrumb mb-3" :aria-label="t('docs.breadcrumbLabel')">
           <ul>
-            <li><NuxtLink to="/docs">Docs</NuxtLink></li>
+            <li><NuxtLinkLocale to="/docs">{{ t('docs.breadcrumbRoot') }}</NuxtLinkLocale></li>
             <li v-for="c in crumbs" :key="c.to">
-              <NuxtLink :to="c.to">{{ c.label }}</NuxtLink>
+              <NuxtLinkLocale :to="c.to">{{ c.label }}</NuxtLinkLocale>
             </li>
           </ul>
         </nav>
-        <span v-if="page.kind && kindTag[page.kind]" class="tag is-primary is-light mb-3">{{ kindTag[page.kind] }}</span>
+        <span v-if="page.kind && kindTag[page.kind]" class="tag is-primary is-light mb-3">{{ t(kindTag[page.kind]!) }}</span>
         <h1 class="title is-2">
           {{ page.title }}
         </h1>
+        <!-- Shown on translated pages only: the docs themselves stay English. -->
+        <i18n-t
+          v-if="locale !== defaultLocale"
+          keypath="docs.englishOnly"
+          tag="p"
+          class="notification is-info is-light"
+        >
+          <template #link>
+            <NuxtLink :to="path" :hreflang="defaultLocale" class="has-text-weight-semibold">{{ t('docs.englishOnlyLink') }}</NuxtLink>
+          </template>
+        </i18n-t>
       </header>
 
       <ContentRenderer v-if="page.body" :value="page" class="content prose-helix" />
 
-      <nav v-if="surround?.some(Boolean)" class="docs-surround columns is-mobile is-multiline" aria-label="Previous and next page">
+      <nav v-if="surround?.some(Boolean)" class="docs-surround columns is-mobile is-multiline" :aria-label="t('docs.surroundLabel')">
         <div class="column is-12-mobile is-6-tablet">
-          <NuxtLink v-if="surround[0]" :to="surround[0].path" class="feature-card">
-            <small>← Previous</small>
+          <NuxtLinkLocale v-if="surround[0]" :to="surround[0].path" class="feature-card">
+            <small>{{ t('docs.previous') }}</small>
             <strong>{{ surround[0].title }}</strong>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
         <div class="column is-12-mobile is-6-tablet has-text-right">
-          <NuxtLink v-if="surround[1]" :to="surround[1].path" class="feature-card">
-            <small>Next →</small>
+          <NuxtLinkLocale v-if="surround[1]" :to="surround[1].path" class="feature-card">
+            <small>{{ t('docs.next') }}</small>
             <strong>{{ surround[1].title }}</strong>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </nav>
     </article>
@@ -112,9 +132,9 @@ useSeoMeta({
       <div class="docs-toc">
         <template v-if="toc.length">
           <p class="toc-title">
-            On this page
+            {{ t('docs.onThisPage') }}
           </p>
-          <nav aria-label="On this page">
+          <nav :aria-label="t('docs.onThisPage')">
             <a
               v-for="l in toc"
               :key="l.id"
@@ -125,7 +145,7 @@ useSeoMeta({
         </template>
         <div v-if="sourceLinks.length" class="source-links">
           <p class="toc-title">
-            Spec source
+            {{ t('docs.specSource') }}
           </p>
           <a v-for="s in sourceLinks" :key="s.label" :href="s.href" target="_blank" rel="noopener">
             <Icon :name="s.icon" />{{ s.label }}

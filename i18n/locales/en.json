@@ -1,0 +1,299 @@
+{
+  "_meta": {
+    "language": "English",
+    "status": "source",
+    "lastTranslator": "Helix maintainers (source language)"
+  },
+  "site": {
+    "name": "Helix",
+    "defaultTitle": "Helix — a GNOME-compatible desktop, written in Rust",
+    "titleTemplate": "{title} · Helix",
+    "skipToContent": "Skip to content"
+  },
+  "header": {
+    "navLabel": "Main navigation",
+    "home": "Helix home",
+    "menu": "Menu",
+    "nav": {
+      "features": "Features",
+      "install": "Install",
+      "compatibility": "Compatibility",
+      "docs": "Docs"
+    },
+    "search": {
+      "label": "Search the docs",
+      "button": "Search docs",
+      "shortcut": "Ctrl K"
+    },
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
+    "github": "Helix on GitHub"
+  },
+  "languagePicker": {
+    "label": "Language",
+    "current": "Language: {language}"
+  },
+  "footer": {
+    "about": "A GNOME-compatible desktop environment, written in Rust. Code, apps and specification are dedicated to the public domain (CC0-1.0).",
+    "specBuilt": "Docs built from spec {commit}",
+    "specBuiltOn": "Docs built from spec {commit} ({date})",
+    "docs": {
+      "label": "Documentation",
+      "heading": "Docs",
+      "introduction": "Introduction",
+      "scope": "Scope",
+      "compatibility": "GNOME compatibility",
+      "contracts": "Contracts"
+    },
+    "source": {
+      "label": "Source code",
+      "heading": "Source"
+    },
+    "get": {
+      "label": "Get Helix",
+      "heading": "Get Helix",
+      "install": "Install",
+      "releases": "Releases",
+      "issues": "Issues"
+    },
+    "legal": "GNOME is a trademark of the GNOME Foundation. Helix is an independent project; it is not affiliated with or endorsed by the GNOME Foundation."
+  },
+  "search": {
+    "label": "Search the docs",
+    "placeholder": "Search interfaces, schemas, pages…",
+    "inputLabel": "Search query",
+    "resultsLabel": "Results",
+    "loading": "Loading…",
+    "noResults": "No results for “{query}”.",
+    "help": "Type to search the specification. ↑ ↓ to move, Enter to open, Esc to close.",
+    "close": "Close search"
+  },
+  "docs": {
+    "menuToggle": "Documentation menu",
+    "sidebarLabel": "Documentation",
+    "specification": "Specification",
+    "introduction": "Introduction",
+    "overview": "Overview",
+    "breadcrumbLabel": "Breadcrumb",
+    "breadcrumbRoot": "Docs",
+    "kind": {
+      "dbus": "D-Bus interface",
+      "gsettings": "GSettings",
+      "wayland": "Wayland",
+      "extensions": "Extensions API",
+      "proposal": "Proposal"
+    },
+    "surroundLabel": "Previous and next page",
+    "previous": "← Previous",
+    "next": "Next →",
+    "onThisPage": "On this page",
+    "specSource": "Spec source",
+    "notFound": "Page not found",
+    "englishOnly": "The documentation is written in English and isn’t translated yet. {link}",
+    "englishOnlyLink": "Open this page in English"
+  },
+  "error": {
+    "notFound": {
+      "title": "Page not found",
+      "text": "Sorry, the page you are looking for could not be found."
+    },
+    "other": {
+      "title": "Something went wrong",
+      "text": "An unexpected error occurred. Please try again later."
+    },
+    "home": "Go back home"
+  },
+  "home": {
+    "description": "Helix is a free, GNOME-compatible desktop for Linux. Your apps keep working, your settings come with you, and you can switch back to GNOME from the login screen any time.",
+    "hero": {
+      "tag": "In everyday use as a main desktop",
+      "title": "A fresh desktop for Linux, {highlight}",
+      "titleHighlight": "with everything you already use.",
+      "subtitle": "Helix is a GNOME-compatible alternative desktop: your apps work as they are, your settings come with you, and you can switch back from the login screen any time.",
+      "install": "Install Helix",
+      "tour": "See what’s included",
+      "facts": {
+        "nextToGnome": "Installs next to GNOME",
+        "keepsSettings": "Keeps your apps and settings",
+        "free": "Free and open (CC0)"
+      },
+      "imageAlt": "The Helix notification list beside a calendar: grouped chat notifications, a mail and a software update notice, today's events, a world clock and media controls.",
+      "imageCaption": "Notifications, your calendar, world clocks and media controls, side by side."
+    },
+    "why": {
+      "eyebrow": "GNOME-compatible",
+      "title": "Try something new without starting over",
+      "lead": "“GNOME-compatible” means Helix works with the same apps and settings as the GNOME desktop that Ubuntu and many other Linux systems use. It looks and feels like its own desktop, but your computer stays yours.",
+      "apps": {
+        "title": "Your apps just work",
+        "text": "GNOME apps, web browsers like Chrome and Chromium, Electron and Qt apps and older X11 programs all run as they are. Nothing to reinstall."
+      },
+      "settings": {
+        "title": "Your settings come with you",
+        "text": "Your wallpaper, dark style, fonts, keyboard layouts, shortcuts and accessibility settings are shared with GNOME, so Helix feels like your computer from the first login."
+      },
+      "switchBack": {
+        "title": "Switch back any time",
+        "text": "Helix installs next to GNOME rather than replacing it. Pick whichever desktop you want each time you log in, and change your mind whenever you like."
+      }
+    },
+    "install": {
+      "eyebrow": "Get Helix",
+      "title": "Install Helix in three steps",
+      "lead": "Helix has ready-made packages for Ubuntu and Debian, and also for Fedora (.rpm) and Arch Linux, for regular PCs and for ARM computers (Arch: PCs only). It sits next to your current desktop and doesn’t replace it.",
+      "download": {
+        "title": "Download",
+        "text": "From the latest releases, download three packages: {desktop} and {full}, then {apps}, which has releases of its own.",
+        "desktopButton": "Helix desktop",
+        "appsButton": "Helix apps"
+      },
+      "install": {
+        "title": "Install",
+        "text": "Open a terminal in the folder you saved them to (usually Downloads) and install all three together. On Ubuntu or Debian:",
+        "commandTitle": "Ubuntu and Debian",
+        "commandLabel": "Install command for Ubuntu and Debian",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copiedAnnouncement": "Command copied",
+        "otherDistros": "On Fedora or Arch, install the same three packages with your package manager; the {guide} has the details.",
+        "guideLink": "full install guide"
+      },
+      "login": {
+        "title": "Log out and pick Helix",
+        "text": "At the login screen, choose {helix} from the session menu (on Ubuntu, it’s the gear button that appears after you pick your name) and log in."
+      },
+      "reassure": {
+        "lead": "Your GNOME session stays installed.",
+        "text": "To switch back, log out and pick it again at the login screen. Your settings are shared, so nothing gets lost either way."
+      },
+      "greeter": {
+        "summary": "For enthusiasts: use Helix’s own login screen",
+        "intro": "Optional, and for Ubuntu and Debian only for now. Install {package} (it brings in greetd), then switch login screens and restart:",
+        "switchLabel": "Commands to switch to the Helix login screen",
+        "back": "To switch back, or if the login screen doesn’t appear (press Ctrl+Alt+F3 for a text login first):",
+        "backLabel": "Commands to switch back to GDM"
+      },
+      "nvidia": {
+        "title": "Have an NVIDIA graphics card?",
+        "text": "Helix needs the NVIDIA driver’s modesetting option turned on ({option}). You only need to set it once."
+      },
+      "help": {
+        "title": "Need a hand?",
+        "text": "The full guide covers every step, and you can ask a question or report a problem on GitHub.",
+        "guide": "Full install guide",
+        "ask": "Ask or report a problem"
+      }
+    },
+    "tour": {
+      "eyebrow": "What’s included",
+      "title": "A complete desktop for every day",
+      "lead": "Helix isn’t a demo. It’s a full desktop that people use every day, with everything you’d expect to find.",
+      "topBar": {
+        "title": "Top bar and quick settings",
+        "text": "Volume, brightness, Wi-Fi, Bluetooth, power modes, night light and dark style, one click away."
+      },
+      "notifications": {
+        "title": "Notifications and calendar",
+        "text": "Your notifications next to a calendar with your events, world clocks, the weather and controls for whatever is playing."
+      },
+      "overview": {
+        "title": "Overview and workspaces",
+        "text": "See all your open windows at a glance and spread your work across workspaces that appear as you need them."
+      },
+      "appGrid": {
+        "title": "App grid and dock",
+        "text": "Find every app in the grid, sort them into folders, and pin favourites to a dock that’s there from the start."
+      },
+      "screenshots": {
+        "title": "Screenshots and recording",
+        "text": "Take a screenshot or record a video of your screen, built right in."
+      },
+      "lock": {
+        "title": "Lock and login screens",
+        "text": "A lock screen with media controls and notification summaries, and, if you want it, Helix’s own login screen."
+      },
+      "quickSettingsAlt": "Helix quick settings: volume and brightness sliders, toggles for Wi-Fi, Bluetooth, airplane mode, night light, dark style and do not disturb, power modes, and lock, suspend, log out, restart and power off.",
+      "quickSettingsCaption": "Quick settings, in a teal accent colour.",
+      "loginAlt": "The Helix login screen: a clock and date, a user's initials and name, a password field, Restart and Power Off buttons, and a session menu set to Helix.",
+      "loginCaption": "Helix’s own login screen, here with a blue accent."
+    },
+    "apps": {
+      "title": "Comes with its own apps",
+      "text": "Helix installs with a set of everyday apps made for it: a file manager, a terminal, a text editor, settings, a web browser and more. The GNOME apps you already have work just as well.",
+      "names": {
+        "files": "Files",
+        "terminal": "Terminal",
+        "textEditor": "Text Editor",
+        "settings": "Settings",
+        "web": "Web"
+      },
+      "more": "and more",
+      "link": "Meet the Helix apps"
+    },
+    "access": {
+      "title": "Accessible, and made to fit you",
+      "intro": "Helix is built to be usable by everyone, the way you like it.",
+      "keyboard": "Full keyboard control of the top bar, quick settings, notifications, menus and dialogs",
+      "screenReader": "Screen reader support",
+      "contrast": "High contrast, larger text and reduced motion",
+      "keyboardAndZoom": "An on-screen keyboard and a magnifier",
+      "accent": "Follows your accent colour and dark style, on the desktop and in your apps",
+      "note": "A few parts of the desktop don’t work with screen readers or larger text yet. We track those openly and are working through them."
+    },
+    "differences": {
+      "eyebrow": "Before you switch",
+      "title": "Familiar where it matters, thoughtful in the details",
+      "lead": "Trying Helix doesn’t lock you in: GNOME stays on your computer and you can move between the two from the login screen. Here’s what to expect.",
+      "touchesTitle": "Thoughtful touches",
+      "safeChoices": {
+        "title": "Safe choices by default.",
+        "text": "When a dialog pops up, pressing Enter picks the safe option, like Cancel or Deny, and keys pressed the instant it appears are ignored, so you can’t approve something by accident."
+      },
+      "extensions": {
+        "title": "Extensions can’t crash your desktop.",
+        "text": "Each extension runs on its own, so a broken one can’t take the rest of the desktop down with it."
+      },
+      "logout": {
+        "title": "Logging out just works.",
+        "text": "An app that has crashed can’t hold up logging out forever."
+      },
+      "look": {
+        "title": "A look of its own.",
+        "text": "The top bar, overview and lock screen are Helix’s own design, with easy-to-read text and visible keyboard focus. Your apps look just as they do now."
+      },
+      "notesTitle": "Good to know",
+      "shellExtensions": {
+        "title": "GNOME Shell extensions don’t run.",
+        "text": "Helix has its own extensions instead. Your GNOME extensions stay installed for when you go back to GNOME."
+      },
+      "notACopy": {
+        "title": "It doesn’t look exactly like GNOME.",
+        "text": "Helix works with GNOME’s apps and settings, but it isn’t a copy of GNOME’s desktop."
+      },
+      "young": {
+        "title": "It’s young software.",
+        "text": "The desktop itself is in English only for now, and some hardware, like touchscreens and drawing tablets, hasn’t been tried on real devices yet."
+      },
+      "link": "See what works and what doesn’t"
+    },
+    "how": {
+      "eyebrow": "For the technically curious",
+      "title": "How Helix works",
+      "text": "Helix is an independent desktop, built in Rust for reliability. It isn’t a fork of GNOME: it speaks the same public interfaces that GNOME’s apps and tools rely on, and every one of them is written down in an open specification. The docs tell the whole story.",
+      "docs": "Read the docs",
+      "compatibility": "GNOME compatibility",
+      "scope": "Scope",
+      "contracts": "Interfaces and contracts"
+    },
+    "source": {
+      "title": "Free and open, for everyone",
+      "text": "Helix, its apps and its specification are dedicated to the public domain (CC0): free to use, share and change, with no strings attached. Follow along, report a problem or help out.",
+      "install": "Install Helix",
+      "desktop": "The desktop itself, and its login screen.",
+      "apps": "Files, Terminal, Text Editor, Settings, Web and more.",
+      "spec": "The open specification behind the docs."
+    }
+  }
+}

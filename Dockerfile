@@ -40,7 +40,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
 
 COPY --from=spec / /spec
 COPY . .
-RUN pnpm generate
+RUN pnpm check-i18n && pnpm generate
 
 # --- runtime: nginx serving .output/public --------------------------------
 FROM ${NGINX_IMAGE} AS runtime

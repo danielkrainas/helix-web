@@ -1,71 +1,71 @@
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: 'Helix',
-  description: 'Helix is a free, GNOME-compatible desktop for Linux. Your apps keep working, your settings come with you, and you can switch back to GNOME from the login screen any time.',
+  title: () => t('site.name'),
+  description: () => t('home.description'),
 })
 
+// Message keys, so the lists keep their order and icons in one place.
 const benefits = [
-  {
-    icon: 'lucide:app-window',
-    title: 'Your apps just work',
-    text: 'GNOME apps, web browsers like Chrome and Chromium, Electron and Qt apps and older X11 programs all run as they are. Nothing to reinstall.',
-  },
-  {
-    icon: 'lucide:sliders-horizontal',
-    title: 'Your settings come with you',
-    text: 'Your wallpaper, dark style, fonts, keyboard layouts, shortcuts and accessibility settings are shared with GNOME, so Helix feels like your computer from the first login.',
-  },
-  {
-    icon: 'lucide:undo-2',
-    title: 'Switch back any time',
-    text: 'Helix installs next to GNOME rather than replacing it. Pick whichever desktop you want each time you log in, and change your mind whenever you like.',
-  },
+  { icon: 'lucide:app-window', title: 'home.why.apps.title', text: 'home.why.apps.text' },
+  { icon: 'lucide:sliders-horizontal', title: 'home.why.settings.title', text: 'home.why.settings.text' },
+  { icon: 'lucide:undo-2', title: 'home.why.switchBack.title', text: 'home.why.switchBack.text' },
 ]
 
 const tour = [
-  {
-    icon: 'lucide:layout-panel-top',
-    title: 'Top bar and quick settings',
-    text: 'Volume, brightness, Wi-Fi, Bluetooth, power modes, night light and dark style, one click away.',
-  },
-  {
-    icon: 'lucide:bell',
-    title: 'Notifications and calendar',
-    text: 'Your notifications next to a calendar with your events, world clocks, the weather and controls for whatever is playing.',
-  },
-  {
-    icon: 'lucide:layers',
-    title: 'Overview and workspaces',
-    text: 'See all your open windows at a glance and spread your work across workspaces that appear as you need them.',
-  },
-  {
-    icon: 'lucide:layout-grid',
-    title: 'App grid and dock',
-    text: 'Find every app in the grid, sort them into folders, and pin favourites to a dock that’s there from the start.',
-  },
-  {
-    icon: 'lucide:camera',
-    title: 'Screenshots and recording',
-    text: 'Take a screenshot or record a video of your screen, built right in.',
-  },
-  {
-    icon: 'lucide:lock-keyhole',
-    title: 'Lock and login screens',
-    text: 'A lock screen with media controls and notification summaries, and, if you want it, Helix’s own login screen.',
-  },
+  { icon: 'lucide:layout-panel-top', title: 'home.tour.topBar.title', text: 'home.tour.topBar.text' },
+  { icon: 'lucide:bell', title: 'home.tour.notifications.title', text: 'home.tour.notifications.text' },
+  { icon: 'lucide:layers', title: 'home.tour.overview.title', text: 'home.tour.overview.text' },
+  { icon: 'lucide:layout-grid', title: 'home.tour.appGrid.title', text: 'home.tour.appGrid.text' },
+  { icon: 'lucide:camera', title: 'home.tour.screenshots.title', text: 'home.tour.screenshots.text' },
+  { icon: 'lucide:lock-keyhole', title: 'home.tour.lock.title', text: 'home.tour.lock.text' },
 ]
 
-const apps = ['Files', 'Terminal', 'Text Editor', 'Settings', 'Web']
+const apps = [
+  'home.apps.names.files',
+  'home.apps.names.terminal',
+  'home.apps.names.textEditor',
+  'home.apps.names.settings',
+  'home.apps.names.web',
+]
 
 const a11y = [
-  'Full keyboard control of the top bar, quick settings, notifications, menus and dialogs',
-  'Screen reader support',
-  'High contrast, larger text and reduced motion',
-  'An on-screen keyboard and a magnifier',
-  'Follows your accent colour and dark style, on the desktop and in your apps',
+  'home.access.keyboard',
+  'home.access.screenReader',
+  'home.access.contrast',
+  'home.access.keyboardAndZoom',
+  'home.access.accent',
 ]
 
+const touches = [
+  { icon: 'lucide:shield-check', title: 'home.differences.safeChoices.title', text: 'home.differences.safeChoices.text' },
+  { icon: 'lucide:puzzle', title: 'home.differences.extensions.title', text: 'home.differences.extensions.text' },
+  { icon: 'lucide:power', title: 'home.differences.logout.title', text: 'home.differences.logout.text' },
+  { icon: 'lucide:palette', title: 'home.differences.look.title', text: 'home.differences.look.text' },
+]
+
+const notes = [
+  { title: 'home.differences.shellExtensions.title', text: 'home.differences.shellExtensions.text' },
+  { title: 'home.differences.notACopy.title', text: 'home.differences.notACopy.text' },
+  { title: 'home.differences.young.title', text: 'home.differences.young.text' },
+]
+
+const repoCards = [
+  { ...repos.desktop, text: 'home.source.desktop' },
+  { ...repos.apps, text: 'home.source.apps' },
+  { ...repos.spec, text: 'home.source.spec' },
+]
+
+// Package and option names, and the commands in the terminal snippets, are
+// the same in every language, so they live here rather than in the messages.
+const packages = { desktop: 'helix-desktop', full: 'helix-desktop-full', apps: 'helix-apps', greeter: 'helix-greeter' }
+const nvidiaOption = 'nvidia-drm.modeset=1'
 const installCommand = 'sudo apt install ./helix-desktop_*.deb ./helix-desktop-full_*.deb ./helix-apps_*.deb'
+const installLines = ['sudo apt install ./helix-desktop_*.deb \\\n    ./helix-desktop-full_*.deb ./helix-apps_*.deb']
+const greeterOnLines = ['sudo systemctl disable gdm.service', 'sudo systemctl enable --force greetd.service', 'sudo reboot']
+const greeterOffLines = ['sudo systemctl disable greetd.service', 'sudo systemctl enable --force gdm.service', 'sudo reboot']
+
 const copied = ref(false)
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -92,30 +92,30 @@ async function copyCommand() {
             <div class="column is-7-desktop">
               <p class="hero-tag">
                 <span class="dot" aria-hidden="true" />
-                In everyday use as a main desktop
+                {{ t('home.hero.tag') }}
               </p>
-              <h1 id="hero-title" class="title is-1">
-                A fresh desktop for Linux, <span class="gradient-text">with everything you already&nbsp;use.</span>
-              </h1>
+              <i18n-t id="hero-title" keypath="home.hero.title" tag="h1" class="title is-1">
+                <template #highlight>
+                  <span class="gradient-text">{{ t('home.hero.titleHighlight') }}</span>
+                </template>
+              </i18n-t>
               <p class="subtitle mt-5">
-                Helix is a GNOME-compatible alternative desktop: your apps work as
-                they are, your settings come with you, and you can switch back from
-                the login screen any time.
+                {{ t('home.hero.subtitle') }}
               </p>
               <div class="buttons mt-6">
-                <NuxtLink to="/#install" class="button is-primary is-medium">
+                <NuxtLinkLocale to="/#install" class="button is-primary is-medium">
                   <span class="icon"><Icon name="lucide:download" /></span>
-                  <span>Install Helix</span>
-                </NuxtLink>
-                <NuxtLink to="/#tour" class="button is-ghost-light is-medium">
+                  <span>{{ t('home.hero.install') }}</span>
+                </NuxtLinkLocale>
+                <NuxtLinkLocale to="/#tour" class="button is-ghost-light is-medium">
                   <span class="icon"><Icon name="lucide:sparkles" /></span>
-                  <span>See what’s included</span>
-                </NuxtLink>
+                  <span>{{ t('home.hero.tour') }}</span>
+                </NuxtLinkLocale>
               </div>
               <p class="hero-facts">
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Installs next to GNOME</span>
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Keeps your apps and settings</span>
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Free and open (CC0)</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>{{ t('home.hero.facts.nextToGnome') }}</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>{{ t('home.hero.facts.keepsSettings') }}</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>{{ t('home.hero.facts.free') }}</span>
               </p>
             </div>
             <div class="column is-5-desktop">
@@ -124,9 +124,9 @@ async function copyCommand() {
                   src="/screenshots/notifications-calendar.webp"
                   width="780"
                   height="582"
-                  alt="The Helix notification list beside a calendar: grouped chat notifications, a mail and a software update notice, today's events, a world clock and media controls."
+                  :alt="t('home.hero.imageAlt')"
                 >
-                <figcaption>Notifications, your calendar, world clocks and media controls, side by side.</figcaption>
+                <figcaption>{{ t('home.hero.imageCaption') }}</figcaption>
               </figure>
             </div>
           </div>
@@ -139,23 +139,21 @@ async function copyCommand() {
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            GNOME-compatible
+            {{ t('home.why.eyebrow') }}
           </p>
           <h2 id="why-title" class="title">
-            Try something new without starting over
+            {{ t('home.why.title') }}
           </h2>
           <p class="lead">
-            “GNOME-compatible” means Helix works with the same apps and settings
-            as the GNOME desktop that Ubuntu and many other Linux systems use. It
-            looks and feels like its own desktop, but your computer stays yours.
+            {{ t('home.why.lead') }}
           </p>
         </div>
         <div class="columns is-multiline">
           <div v-for="b in benefits" :key="b.title" class="column is-4-desktop is-12-tablet">
             <div class="feature-card is-hoverable">
               <span class="feature-icon" aria-hidden="true"><Icon :name="b.icon" /></span>
-              <h3>{{ b.title }}</h3>
-              <p>{{ b.text }}</p>
+              <h3>{{ t(b.title) }}</h3>
+              <p>{{ t(b.text) }}</p>
             </div>
           </div>
         </div>
@@ -167,125 +165,119 @@ async function copyCommand() {
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            Get Helix
+            {{ t('home.install.eyebrow') }}
           </p>
           <h2 id="install-title" class="title">
-            Install Helix in three steps
+            {{ t('home.install.title') }}
           </h2>
           <p class="lead">
-            Helix has ready-made packages for Ubuntu and Debian, and also for
-            Fedora (.rpm) and Arch Linux, for regular PCs and for ARM computers
-            (Arch: PCs only). It sits next to your current desktop and doesn’t replace it.
+            {{ t('home.install.lead') }}
           </p>
         </div>
         <div class="columns is-variable is-8-desktop">
           <div class="column is-7-desktop" style="min-width: 0">
             <ol class="install-steps">
               <li>
-                <h3>Download</h3>
-                <p>
-                  From the latest releases, download three packages:
-                  <strong>helix-desktop</strong> and <strong>helix-desktop-full</strong>,
-                  then <strong>helix-apps</strong>, which has releases of its own.
-                </p>
+                <h3>{{ t('home.install.download.title') }}</h3>
+                <i18n-t keypath="home.install.download.text" tag="p">
+                  <template #desktop>
+                    <strong>{{ packages.desktop }}</strong>
+                  </template>
+                  <template #full>
+                    <strong>{{ packages.full }}</strong>
+                  </template>
+                  <template #apps>
+                    <strong>{{ packages.apps }}</strong>
+                  </template>
+                </i18n-t>
                 <div class="buttons mt-3">
                   <a :href="links.desktopReleases" class="button is-primary" target="_blank" rel="noopener">
                     <span class="icon"><Icon name="lucide:package" /></span>
-                    <span>Helix desktop</span>
+                    <span>{{ t('home.install.download.desktopButton') }}</span>
                   </a>
                   <a :href="links.appsReleases" class="button" target="_blank" rel="noopener">
                     <span class="icon"><Icon name="lucide:layout-grid" /></span>
-                    <span>Helix apps</span>
+                    <span>{{ t('home.install.download.appsButton') }}</span>
                   </a>
                 </div>
               </li>
               <li>
-                <h3>Install</h3>
+                <h3>{{ t('home.install.install.title') }}</h3>
                 <p>
-                  Open a terminal in the folder you saved them to (usually
-                  Downloads) and install all three together. On Ubuntu or Debian:
+                  {{ t('home.install.install.text') }}
                 </p>
                 <div class="command-box">
                   <div class="command-bar">
-                    <span>Ubuntu and Debian</span>
+                    <span>{{ t('home.install.install.commandTitle') }}</span>
                     <button type="button" class="copy-button" @click="copyCommand">
                       <span class="icon"><Icon :name="copied ? 'lucide:check' : 'lucide:copy'" /></span>
-                      <span>{{ copied ? 'Copied' : 'Copy' }}</span>
+                      <span>{{ t(copied ? 'home.install.install.copied' : 'home.install.install.copy') }}</span>
                     </button>
                   </div>
-                  <pre class="terminal" aria-label="Install command for Ubuntu and Debian"><span class="prompt">$ </span>sudo apt install ./helix-desktop_*.deb \
-    ./helix-desktop-full_*.deb ./helix-apps_*.deb</pre>
-                  <span class="is-sr-only" aria-live="polite">{{ copied ? 'Command copied' : '' }}</span>
+                  <TerminalCommands :commands="installLines" :label="t('home.install.install.commandLabel')" />
+                  <span class="is-sr-only" aria-live="polite">{{ copied ? t('home.install.install.copiedAnnouncement') : '' }}</span>
                 </div>
-                <p class="is-size-7 has-text-weak mt-2">
-                  On Fedora or Arch, install the same three packages with your
-                  package manager; the
-                  <a :href="`${links.desktop}#installing-and-using-helix`" target="_blank" rel="noopener" class="has-text-accent">full install guide</a>
-                  has the details.
-                </p>
+                <i18n-t keypath="home.install.install.otherDistros" tag="p" class="is-size-7 has-text-weak mt-2">
+                  <template #guide>
+                    <a :href="`${links.desktop}#installing-and-using-helix`" target="_blank" rel="noopener" class="has-text-accent">{{ t('home.install.install.guideLink') }}</a>
+                  </template>
+                </i18n-t>
               </li>
               <li>
-                <h3>Log out and pick Helix</h3>
-                <p>
-                  At the login screen, choose <strong>Helix</strong> from the session
-                  menu (on Ubuntu, it’s the gear button that appears after you pick
-                  your name) and log in.
-                </p>
+                <h3>{{ t('home.install.login.title') }}</h3>
+                <i18n-t keypath="home.install.login.text" tag="p">
+                  <template #helix>
+                    <strong>{{ t('site.name') }}</strong>
+                  </template>
+                </i18n-t>
               </li>
             </ol>
 
             <div class="reassure">
               <span class="icon"><Icon name="lucide:undo-2" /></span>
               <p>
-                <strong>Your GNOME session stays installed.</strong> To switch back,
-                log out and pick it again at the login screen. Your settings are
-                shared, so nothing gets lost either way.
+                <strong>{{ t('home.install.reassure.lead') }}</strong> {{ t('home.install.reassure.text') }}
               </p>
             </div>
 
             <details class="install-extra">
-              <summary>For enthusiasts: use Helix’s own login screen</summary>
-              <p>
-                Optional, and for Ubuntu and Debian only for now. Install
-                <code>helix-greeter</code> (it brings in greetd), then switch login
-                screens and restart:
-              </p>
-              <pre class="terminal" aria-label="Commands to switch to the Helix login screen"><span class="prompt">$ </span>sudo systemctl disable gdm.service
-<span class="prompt">$ </span>sudo systemctl enable --force greetd.service
-<span class="prompt">$ </span>sudo reboot</pre>
+              <summary>{{ t('home.install.greeter.summary') }}</summary>
+              <i18n-t keypath="home.install.greeter.intro" tag="p">
+                <template #package>
+                  <code>{{ packages.greeter }}</code>
+                </template>
+              </i18n-t>
+              <TerminalCommands :commands="greeterOnLines" :label="t('home.install.greeter.switchLabel')" />
               <p class="mt-3">
-                To switch back, or if the login screen doesn’t appear (press
-                Ctrl+Alt+F3 for a text login first):
+                {{ t('home.install.greeter.back') }}
               </p>
-              <pre class="terminal" aria-label="Commands to switch back to GDM"><span class="prompt">$ </span>sudo systemctl disable greetd.service
-<span class="prompt">$ </span>sudo systemctl enable --force gdm.service
-<span class="prompt">$ </span>sudo reboot</pre>
+              <TerminalCommands :commands="greeterOffLines" :label="t('home.install.greeter.backLabel')" />
             </details>
           </div>
           <div class="column is-5-desktop">
             <div class="feature-card is-auto-height">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:cpu" /></span>
-              <h3>Have an NVIDIA graphics card?</h3>
-              <p>
-                Helix needs the NVIDIA driver’s modesetting option turned on
-                (<code>nvidia-drm.modeset=1</code>). You only need to set it once.
-              </p>
+              <h3>{{ t('home.install.nvidia.title') }}</h3>
+              <i18n-t keypath="home.install.nvidia.text" tag="p">
+                <template #option>
+                  <code>{{ nvidiaOption }}</code>
+                </template>
+              </i18n-t>
             </div>
             <div class="feature-card is-auto-height mt-5">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:life-buoy" /></span>
-              <h3>Need a hand?</h3>
+              <h3>{{ t('home.install.help.title') }}</h3>
               <p class="mb-4">
-                The full guide covers every step, and you can ask a question or
-                report a problem on GitHub.
+                {{ t('home.install.help.text') }}
               </p>
               <div class="buttons">
                 <a :href="`${links.desktop}#installing-and-using-helix`" class="button is-fullwidth" target="_blank" rel="noopener">
                   <span class="icon"><Icon name="lucide:file-text" /></span>
-                  <span>Full install guide</span>
+                  <span>{{ t('home.install.help.guide') }}</span>
                 </a>
                 <a :href="links.desktopIssues" class="button is-fullwidth" target="_blank" rel="noopener">
                   <span class="icon"><Icon name="lucide:message-circle" /></span>
-                  <span>Ask or report a problem</span>
+                  <span>{{ t('home.install.help.ask') }}</span>
                 </a>
               </div>
             </div>
@@ -299,23 +291,22 @@ async function copyCommand() {
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            What’s included
+            {{ t('home.tour.eyebrow') }}
           </p>
           <h2 id="tour-title" class="title">
-            A complete desktop for every day
+            {{ t('home.tour.title') }}
           </h2>
           <p class="lead">
-            Helix isn’t a demo. It’s a full desktop that people use every day,
-            with everything you’d expect to find.
+            {{ t('home.tour.lead') }}
           </p>
         </div>
         <div class="fixed-grid has-1-cols-mobile has-2-cols-tablet has-3-cols-desktop">
           <div class="grid">
-            <div v-for="t in tour" :key="t.title" class="cell">
+            <div v-for="item in tour" :key="item.title" class="cell">
               <div class="feature-card is-hoverable">
-                <span class="feature-icon" aria-hidden="true"><Icon :name="t.icon" /></span>
-                <h3>{{ t.title }}</h3>
-                <p>{{ t.text }}</p>
+                <span class="feature-icon" aria-hidden="true"><Icon :name="item.icon" /></span>
+                <h3>{{ t(item.title) }}</h3>
+                <p>{{ t(item.text) }}</p>
               </div>
             </div>
           </div>
@@ -329,9 +320,9 @@ async function copyCommand() {
                 width="480"
                 height="500"
                 loading="lazy"
-                alt="Helix quick settings: volume and brightness sliders, toggles for Wi-Fi, Bluetooth, airplane mode, night light, dark style and do not disturb, power modes, and lock, suspend, log out, restart and power off."
+                :alt="t('home.tour.quickSettingsAlt')"
               >
-              <figcaption>Quick settings, in a teal accent colour.</figcaption>
+              <figcaption>{{ t('home.tour.quickSettingsCaption') }}</figcaption>
             </figure>
           </div>
           <div class="column is-8-desktop">
@@ -341,9 +332,9 @@ async function copyCommand() {
                 width="1024"
                 height="640"
                 loading="lazy"
-                alt="The Helix login screen: a clock and date, a user's initials and name, a password field, Restart and Power Off buttons, and a session menu set to Helix."
+                :alt="t('home.tour.loginAlt')"
               >
-              <figcaption>Helix’s own login screen, here with a blue accent.</figcaption>
+              <figcaption>{{ t('home.tour.loginCaption') }}</figcaption>
             </figure>
           </div>
         </div>
@@ -358,19 +349,17 @@ async function copyCommand() {
             <div class="feature-card">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:layout-grid" /></span>
               <h2 id="apps-title" class="title is-4 mb-3">
-                Comes with its own apps
+                {{ t('home.apps.title') }}
               </h2>
               <p>
-                Helix installs with a set of everyday apps made for it: a file
-                manager, a terminal, a text editor, settings, a web browser and
-                more. The GNOME apps you already have work just as well.
+                {{ t('home.apps.text') }}
               </p>
               <div class="tags are-medium is-app-list mt-4">
-                <span v-for="a in apps" :key="a" class="tag">{{ a }}</span>
-                <span class="tag">and more</span>
+                <span v-for="a in apps" :key="a" class="tag">{{ t(a) }}</span>
+                <span class="tag">{{ t('home.apps.more') }}</span>
               </div>
               <a :href="links.apps" class="card-more" target="_blank" rel="noopener">
-                Meet the Helix apps <Icon name="lucide:arrow-right" />
+                {{ t('home.apps.link') }} <Icon name="lucide:arrow-right" />
               </a>
             </div>
           </div>
@@ -378,17 +367,16 @@ async function copyCommand() {
             <div class="feature-card">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:accessibility" /></span>
               <h2 class="title is-4 mb-3">
-                Accessible, and made to fit you
+                {{ t('home.access.title') }}
               </h2>
-              <p>Helix is built to be usable by everyone, the way you like it.</p>
+              <p>{{ t('home.access.intro') }}</p>
               <ul class="ticks">
                 <li v-for="a in a11y" :key="a">
-                  {{ a }}
+                  {{ t(a) }}
                 </li>
               </ul>
               <p class="is-size-7 has-text-weak mt-3">
-                A few parts of the desktop don’t work with screen readers or larger
-                text yet. We track those openly and are working through them.
+                {{ t('home.access.note') }}
               </p>
             </div>
           </div>
@@ -401,76 +389,41 @@ async function copyCommand() {
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            Before you switch
+            {{ t('home.differences.eyebrow') }}
           </p>
           <h2 id="diff-title" class="title">
-            Familiar where it matters, thoughtful in the details
+            {{ t('home.differences.title') }}
           </h2>
           <p class="lead">
-            Trying Helix doesn’t lock you in: GNOME stays on your computer and you
-            can move between the two from the login screen. Here’s what to expect.
+            {{ t('home.differences.lead') }}
           </p>
         </div>
         <div class="columns is-variable is-6-desktop">
           <div class="column">
             <h3 class="title is-5">
-              Thoughtful touches
+              {{ t('home.differences.touchesTitle') }}
             </h3>
             <ul class="diff-list">
-              <li>
-                <span class="icon"><Icon name="lucide:shield-check" /></span>
-                <span><strong>Safe choices by default.</strong> When a dialog pops
-                  up, pressing Enter picks the safe option, like Cancel or Deny, and
-                  keys pressed the instant it appears are ignored, so you can’t
-                  approve something by accident.</span>
-              </li>
-              <li>
-                <span class="icon"><Icon name="lucide:puzzle" /></span>
-                <span><strong>Extensions can’t crash your desktop.</strong> Each
-                  extension runs on its own, so a broken one can’t take the rest of
-                  the desktop down with it.</span>
-              </li>
-              <li>
-                <span class="icon"><Icon name="lucide:power" /></span>
-                <span><strong>Logging out just works.</strong> An app that has
-                  crashed can’t hold up logging out forever.</span>
-              </li>
-              <li>
-                <span class="icon"><Icon name="lucide:palette" /></span>
-                <span><strong>A look of its own.</strong> The top bar, overview and
-                  lock screen are Helix’s own design, with easy-to-read text and visible
-                  keyboard focus. Your apps look just as they do now.</span>
+              <li v-for="item in touches" :key="item.title">
+                <span class="icon"><Icon :name="item.icon" /></span>
+                <span><strong>{{ t(item.title) }}</strong> {{ t(item.text) }}</span>
               </li>
             </ul>
           </div>
           <div class="column">
             <h3 class="title is-5">
-              Good to know
+              {{ t('home.differences.notesTitle') }}
             </h3>
             <ul class="diff-list">
-              <li class="is-note">
+              <li v-for="item in notes" :key="item.title" class="is-note">
                 <span class="icon"><Icon name="lucide:info" /></span>
-                <span><strong>GNOME Shell extensions don’t run.</strong> Helix has
-                  its own extensions instead. Your GNOME extensions stay installed
-                  for when you go back to GNOME.</span>
-              </li>
-              <li class="is-note">
-                <span class="icon"><Icon name="lucide:info" /></span>
-                <span><strong>It doesn’t look exactly like GNOME.</strong> Helix
-                  works with GNOME’s apps and settings, but it isn’t a copy of
-                  GNOME’s desktop.</span>
-              </li>
-              <li class="is-note">
-                <span class="icon"><Icon name="lucide:info" /></span>
-                <span><strong>It’s young software.</strong> The desktop itself is
-                  in English only for now, and some hardware, like touchscreens
-                  and drawing tablets, hasn’t been tried on real devices yet.</span>
+                <span><strong>{{ t(item.title) }}</strong> {{ t(item.text) }}</span>
               </li>
             </ul>
-            <NuxtLink to="/docs/gnome-compatibility" class="button is-primary is-outlined mt-4">
-              <span>See what works and what doesn’t</span>
+            <NuxtLinkLocale to="/docs/gnome-compatibility" class="button is-primary is-outlined mt-4">
+              <span>{{ t('home.differences.link') }}</span>
               <span class="icon"><Icon name="lucide:arrow-right" /></span>
-            </NuxtLink>
+            </NuxtLinkLocale>
           </div>
         </div>
       </div>
@@ -482,32 +435,29 @@ async function copyCommand() {
         <div class="columns is-variable is-8-desktop is-vcentered">
           <div class="column is-7-desktop">
             <p class="eyebrow">
-              For the technically curious
+              {{ t('home.how.eyebrow') }}
             </p>
             <h2 id="how-title" class="title is-size-3-desktop is-size-4-touch">
-              How Helix works
+              {{ t('home.how.title') }}
             </h2>
             <p>
-              Helix is an independent desktop, built in Rust for reliability. It
-              isn’t a fork of GNOME: it speaks the same public interfaces that
-              GNOME’s apps and tools rely on, and every one of them is written down
-              in an open specification. The docs tell the whole story.
+              {{ t('home.how.text') }}
             </p>
           </div>
           <div class="column is-5-desktop">
             <div class="pills">
-              <NuxtLink to="/docs" class="pill">
-                Read the docs
-              </NuxtLink>
-              <NuxtLink to="/docs/gnome-compatibility" class="pill">
-                GNOME compatibility
-              </NuxtLink>
-              <NuxtLink to="/docs/scope" class="pill">
-                Scope
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts" class="pill">
-                Interfaces and contracts
-              </NuxtLink>
+              <NuxtLinkLocale to="/docs" class="pill">
+                {{ t('home.how.docs') }}
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/gnome-compatibility" class="pill">
+                {{ t('home.how.compatibility') }}
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/scope" class="pill">
+                {{ t('home.how.scope') }}
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/contracts" class="pill">
+                {{ t('home.how.contracts') }}
+              </NuxtLinkLocale>
             </div>
           </div>
         </div>
@@ -521,27 +471,21 @@ async function copyCommand() {
           <div class="columns is-vcentered is-variable is-6-desktop">
             <div class="column is-5-desktop">
               <h2 id="source-title" class="title is-3">
-                Free and open, for everyone
+                {{ t('home.source.title') }}
               </h2>
               <p class="mb-5">
-                Helix, its apps and its specification are dedicated to the public
-                domain (CC0): free to use, share and change, with no strings
-                attached. Follow along, report a problem or help out.
+                {{ t('home.source.text') }}
               </p>
-              <NuxtLink to="/#install" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(184, 75%, 38%), hsl(196, 80%, 38%)); border: none">
+              <NuxtLinkLocale to="/#install" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(184, 75%, 38%), hsl(196, 80%, 38%)); border: none">
                 <span class="icon"><Icon name="lucide:download" /></span>
-                <span>Install Helix</span>
-              </NuxtLink>
+                <span>{{ t('home.source.install') }}</span>
+              </NuxtLinkLocale>
             </div>
             <div class="column is-7-desktop">
               <div class="fixed-grid has-1-cols-mobile has-1-cols-tablet has-1-cols-desktop">
                 <div class="grid">
                   <a
-                    v-for="r in [
-                      { name: 'helix-desktop', href: links.desktop, text: 'The desktop itself, and its login screen.' },
-                      { name: 'helix-apps', href: links.apps, text: 'Files, Terminal, Text Editor, Settings, Web and more.' },
-                      { name: 'helix-desktop-spec', href: links.spec, text: 'The open specification behind the docs.' },
-                    ]"
+                    v-for="r in repoCards"
                     :key="r.name"
                     :href="r.href"
                     target="_blank"
@@ -549,7 +493,7 @@ async function copyCommand() {
                     class="cell repo-card"
                   >
                     <span class="repo-name"><Icon name="simple-icons:github" />{{ r.name }}</span>
-                    <p>{{ r.text }}</p>
+                    <p>{{ t(r.text) }}</p>
                   </a>
                 </div>
               </div>

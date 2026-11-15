@@ -1,3 +1,5 @@
+import { defaultLocale, locales } from './i18n/locales'
+
 // Inline, render-blocking: applies a stored light/dark choice before first
 // paint. Without a stored choice the page follows prefers-color-scheme
 // (Bulma's system theme), so this only ever sets an explicit override.
@@ -8,12 +10,14 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Order matters: helix-spec must generate .spec/ before Nuxt Content scans it.
-  modules: ['./modules/helix-spec', '@nuxt/icon', '@nuxt/content'],
+  modules: ['./modules/helix-spec', '@nuxt/icon', '@nuxt/content', '@nuxtjs/i18n'],
 
   css: ['~/assets/scss/main.scss'],
 
   app: {
     head: {
+      // `lang` is the fallback for pages rendered without the app (the SPA
+      // 404.html); app.vue sets it from the current locale everywhere else.
       htmlAttrs: { lang: 'en', class: 'has-navbar-fixed-top' },
       meta: [
         { name: 'color-scheme', content: 'light dark' },
@@ -40,6 +44,20 @@ export default defineNuxtConfig({
     serverBundle: { collections: ['lucide', 'simple-icons'] },
     clientBundle: { scan: true, sizeLimitKb: 256 },
     fallbackToApi: false,
+  },
+
+  // Languages: see i18n/locales.ts and "Translations" in the README. English
+  // stays at the root URLs; other languages get a prefix (/es/, /zh-cn/ …).
+  i18n: {
+    strategy: 'prefix_except_default',
+    defaultLocale,
+    locales,
+    vueI18n: './i18n.config.ts',
+    // The site's origin (e.g. https://helix.example), needed for the absolute
+    // URLs of hreflang alternates once there is more than one language.
+    baseUrl: process.env.HELIX_SITE_URL ?? '',
+    // The browser's language may be suggested, never forced: no redirects.
+    detectBrowserLanguage: false,
   },
 
   runtimeConfig: {

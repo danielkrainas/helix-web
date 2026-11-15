@@ -1,37 +1,41 @@
 <script setup lang="ts">
 const route = useRoute()
+const path = useBasePath()
+const { t } = useI18n()
 const menuOpen = ref(false)
 const searchOpen = useState('search-open', () => false)
 const { scheme, toggle } = useColorScheme()
 
+const themeLabel = computed(() => t(scheme.value === 'dark' ? 'header.theme.toLight' : 'header.theme.toDark'))
+
 watch(() => route.fullPath, () => { menuOpen.value = false })
 
 const items = computed(() => {
-  const p = route.path
+  const p = path.value
   return [
-    { label: 'Features', to: '/#tour', active: false },
-    { label: 'Install', to: '/#install', active: false },
-    { label: 'Compatibility', to: '/docs/gnome-compatibility', active: p.startsWith('/docs/gnome-compatibility') },
-    { label: 'Docs', to: '/docs', active: p.startsWith('/docs') && !p.startsWith('/docs/gnome-compatibility') },
+    { label: t('header.nav.features'), to: '/#tour', active: false },
+    { label: t('header.nav.install'), to: '/#install', active: false },
+    { label: t('header.nav.compatibility'), to: '/docs/gnome-compatibility', active: p.startsWith('/docs/gnome-compatibility') },
+    { label: t('header.nav.docs'), to: '/docs', active: p.startsWith('/docs') && !p.startsWith('/docs/gnome-compatibility') },
   ]
 })
 </script>
 
 <template>
   <header>
-    <nav class="navbar is-fixed-top helix-navbar" aria-label="Main navigation">
+    <nav class="navbar is-fixed-top helix-navbar" :aria-label="t('header.navLabel')">
       <div class="container is-widescreen">
         <div class="navbar-brand">
-          <NuxtLink to="/" class="navbar-item" aria-label="Helix home">
+          <NuxtLinkLocale to="/" class="navbar-item" :aria-label="t('header.home')">
             <AppLogo />
-          </NuxtLink>
+          </NuxtLinkLocale>
           <button
             type="button"
             class="navbar-burger"
             :class="{ 'is-active': menuOpen }"
             :aria-expanded="menuOpen"
             aria-controls="main-menu"
-            aria-label="Menu"
+            :aria-label="t('header.menu')"
             @click="menuOpen = !menuOpen"
           >
             <span aria-hidden="true" />
@@ -43,7 +47,7 @@ const items = computed(() => {
 
         <div id="main-menu" class="navbar-menu" :class="{ 'is-active': menuOpen }">
           <div class="navbar-start">
-            <NuxtLink
+            <NuxtLinkLocale
               v-for="item in items"
               :key="item.to"
               :to="item.to"
@@ -52,24 +56,25 @@ const items = computed(() => {
               :aria-current="item.active ? 'page' : undefined"
             >
               {{ item.label }}
-            </NuxtLink>
+            </NuxtLinkLocale>
           </div>
 
           <div class="navbar-end">
             <div class="navbar-item">
-              <button type="button" class="button search-button" aria-label="Search the docs" @click="searchOpen = true">
+              <button type="button" class="button search-button" :aria-label="t('header.search.label')" @click="searchOpen = true">
                 <span class="icon"><Icon name="lucide:search" /></span>
-                <span>Search docs</span>
-                <kbd aria-hidden="true">Ctrl K</kbd>
+                <span>{{ t('header.search.button') }}</span>
+                <kbd aria-hidden="true">{{ t('header.search.shortcut') }}</kbd>
               </button>
             </div>
+            <LanguagePicker />
             <div class="navbar-item">
               <div class="buttons">
                 <button
                   type="button"
                   class="button is-ghost"
-                  :aria-label="scheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
-                  :title="scheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+                  :aria-label="themeLabel"
+                  :title="themeLabel"
                   @click="toggle"
                 >
                   <span class="icon">
@@ -82,8 +87,8 @@ const items = computed(() => {
                   :href="links.desktop"
                   target="_blank"
                   rel="noopener"
-                  aria-label="Helix on GitHub"
-                  title="Helix on GitHub"
+                  :aria-label="t('header.github')"
+                  :title="t('header.github')"
                 >
                   <span class="icon"><Icon name="simple-icons:github" /></span>
                 </a>

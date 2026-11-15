@@ -3,6 +3,8 @@
 // every word of the query against section titles and text.
 const open = useState('search-open', () => false)
 const router = useRouter()
+const { t } = useI18n()
+const localePath = useLocalePath()
 const query = ref('')
 const selected = ref(0)
 const input = ref<HTMLInputElement | null>(null)
@@ -48,7 +50,7 @@ function go(s?: Section) {
   if (!s) return
   open.value = false
   query.value = ''
-  router.push(s.id)
+  router.push(localePath(s.id))
 }
 
 function onKey(e: KeyboardEvent) {
@@ -85,7 +87,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     :class="{ 'is-active': open }"
     role="dialog"
     aria-modal="true"
-    aria-label="Search the docs"
+    :aria-label="t('search.label')"
   >
     <div class="modal-background" @click="open = false" />
     <div v-if="open" class="modal-content">
@@ -97,8 +99,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               v-model="query"
               class="input is-medium"
               type="search"
-              placeholder="Search interfaces, schemas, pages…"
-              aria-label="Search query"
+              :placeholder="t('search.placeholder')"
+              :aria-label="t('search.inputLabel')"
               aria-controls="search-results"
               autocomplete="off"
               @keydown="onInputKey"
@@ -106,20 +108,20 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <span class="icon is-left"><Icon name="lucide:search" /></span>
           </p>
         </div>
-        <div id="search-results" class="search-results" role="listbox" aria-label="Results">
+        <div id="search-results" class="search-results" role="listbox" :aria-label="t('search.resultsLabel')">
           <p v-if="!sections" class="p-3 has-text-weak">
-            Loading…
+            {{ t('search.loading') }}
           </p>
           <p v-else-if="query && !results.length" class="p-3 has-text-weak">
-            No results for “{{ query }}”.
+            {{ t('search.noResults', { query }) }}
           </p>
           <p v-else-if="!query" class="p-3 has-text-weak">
-            Type to search the specification. ↑ ↓ to move, Enter to open, Esc to close.
+            {{ t('search.help') }}
           </p>
           <NuxtLink
             v-for="(r, i) in results"
             :key="r.id"
-            :to="r.id"
+            :to="localePath(r.id)"
             role="option"
             :aria-selected="i === selected"
             :class="{ 'is-selected': i === selected }"
@@ -131,6 +133,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
         </div>
       </div>
     </div>
-    <button type="button" class="modal-close is-large" aria-label="Close search" @click="open = false" />
+    <button type="button" class="modal-close is-large" :aria-label="t('search.close')" @click="open = false" />
   </div>
 </template>

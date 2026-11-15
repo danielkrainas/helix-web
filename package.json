@@ -12,6 +12,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "sync-spec": "node scripts/sync-spec.mjs",
+    "check-i18n": "node scripts/check-i18n.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@iconify-json/simple-icons": "1.2.102",
     "@nuxt/content": "3.16.2",
     "@nuxt/icon": "2.6.2",
+    "@nuxtjs/i18n": "10.6.0",
     "bulma": "1.0.4",
     "fast-xml-parser": "5.12.0",
     "nuxt": "4.6.4"
@@ -29,6 +31,7 @@
   "devDependencies": {
     "@nuxt/kit": "4.6.4",
     "@types/node": "24.19.2",
+    "@vue/compiler-sfc": "3.5.45",
     "sass": "1.108.2",
     "typescript": "5.9.3",
     "vue-tsc": "3.3.14"
