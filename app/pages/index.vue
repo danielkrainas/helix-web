@@ -1,76 +1,85 @@
 <script setup lang="ts">
 useSeoMeta({
   title: 'Helix',
-  description: 'Helix is a GNOME-compatible desktop environment written in Rust. It runs your GNOME, GTK and libadwaita apps unmodified and keeps your GNOME settings, built from GNOME’s public contracts rather than its code.',
+  description: 'Helix is a free, GNOME-compatible desktop for Linux. Your apps keep working, your settings come with you, and you can switch back to GNOME from the login screen any time.',
 })
 
-const { data: counts } = await useAsyncData('spec-counts', async () => {
-  const kinds = ['dbus', 'gsettings', 'extensions'] as const
-  const entries = await Promise.all(kinds.map(async kind =>
-    [kind, await queryCollection('docs').where('kind', '=', kind).count()] as const))
-  return Object.fromEntries(entries) as Record<typeof kinds[number], number>
-})
-
-const compat = [
+const benefits = [
   {
     icon: 'lucide:app-window',
-    title: 'Your apps run unmodified',
-    text: 'GTK 3, GTK 4 and libadwaita applications run as they are, on Wayland or on X11 through Xwayland. Chromium, Electron and Qt applications work too.',
+    title: 'Your apps just work',
+    text: 'GNOME apps, web browsers like Chrome and Chromium, Electron and Qt apps and older X11 programs all run as they are. Nothing to reinstall.',
   },
   {
     icon: 'lucide:sliders-horizontal',
-    title: 'Your GNOME settings carry over',
-    text: 'Helix reads and writes your settings through the system’s GSettings schemas: wallpaper, dark style, fonts, keyboard layouts, shortcuts and accessibility. Switch between GNOME and Helix and keep them all.',
+    title: 'Your settings come with you',
+    text: 'Your wallpaper, dark style, fonts, keyboard layouts, shortcuts and accessibility settings are shared with GNOME, so Helix feels like your computer from the first login.',
   },
   {
-    icon: 'lucide:plug-zap',
-    title: 'GNOME tools keep working',
-    text: 'GNOME Settings, command-line tools and sandboxed apps reach the same D-Bus interfaces and portal backends they expect: the session manager, display configuration, screenshots, screen casting, notifications and media controls.',
+    icon: 'lucide:undo-2',
+    title: 'Switch back any time',
+    text: 'Helix installs next to GNOME rather than replacing it. Pick whichever desktop you want each time you log in, and change your mind whenever you like.',
   },
 ]
 
-const parts = [
-  {
-    icon: 'lucide:monitor',
-    title: 'Compositor',
-    text: 'A Smithay compositor on DRM/KMS with multi-monitor layout, fractional scaling, workspaces, Xwayland, idle monitoring and screen capture.',
-  },
+const tour = [
   {
     icon: 'lucide:layout-panel-top',
-    title: 'Shell',
-    text: 'Top panel, quick settings, notifications with a calendar and media controls, overview with dynamic workspaces, app grid and dock, app and window switchers, screenshots and screen recording.',
+    title: 'Top bar and quick settings',
+    text: 'Volume, brightness, Wi-Fi, Bluetooth, power modes, night light and dark style, one click away.',
   },
   {
-    icon: 'lucide:power',
-    title: 'Session',
-    text: 'GNOME’s session manager interface, with ordered startup through a systemd user target, autostart, inhibitors, and logout, restart and power off through logind.',
+    icon: 'lucide:bell',
+    title: 'Notifications and calendar',
+    text: 'Your notifications next to a calendar with your events, world clocks, the weather and controls for whatever is playing.',
   },
   {
-    icon: 'lucide:door-open',
-    title: 'Portals',
-    text: 'xdg-desktop-portal backends for settings, screenshots, screen casting, remote desktop, the clipboard, global shortcuts and more. Your accent colour and dark style reach sandboxed apps.',
+    icon: 'lucide:layers',
+    title: 'Overview and workspaces',
+    text: 'See all your open windows at a glance and spread your work across workspaces that appear as you need them.',
+  },
+  {
+    icon: 'lucide:layout-grid',
+    title: 'App grid and dock',
+    text: 'Find every app in the grid, sort them into folders, and pin favourites to a dock that’s there from the start.',
+  },
+  {
+    icon: 'lucide:camera',
+    title: 'Screenshots and recording',
+    text: 'Take a screenshot or record a video of your screen, built right in.',
   },
   {
     icon: 'lucide:lock-keyhole',
-    title: 'Login and lock screen',
-    text: 'An optional greetd login screen, so a Helix system needs neither GDM nor GNOME Shell, and a lock screen of its own with media controls and notification summaries.',
-  },
-  {
-    icon: 'lucide:puzzle',
-    title: 'Isolated extensions',
-    text: 'Extensions are separate programs that talk to the shell over a versioned D-Bus API: panel items, quick settings, dock items, commands and menus. A crashing extension can’t take the desktop with it.',
+    title: 'Lock and login screens',
+    text: 'A lock screen with media controls and notification summaries, and, if you want it, Helix’s own login screen.',
   },
 ]
 
 const apps = ['Files', 'Terminal', 'Text Editor', 'Settings', 'Web']
 
 const a11y = [
-  'Keyboard navigation through the panel, quick settings, notifications, menus and dialogs',
-  'Screen-reader support through AT-SPI',
-  'High contrast, reduced motion and Large Text',
-  'On-screen keyboard and magnifier',
-  'Follows your accent colour, in the shell and, through the Settings portal, in your apps',
+  'Full keyboard control of the top bar, quick settings, notifications, menus and dialogs',
+  'Screen reader support',
+  'High contrast, larger text and reduced motion',
+  'An on-screen keyboard and a magnifier',
+  'Follows your accent colour and dark style, on the desktop and in your apps',
 ]
+
+const installCommand = 'sudo apt install ./helix-desktop_*.deb ./helix-desktop-full_*.deb ./helix-apps_*.deb'
+const copied = ref(false)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+
+async function copyCommand() {
+  try {
+    await navigator.clipboard.writeText(installCommand)
+    copied.value = true
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => { copied.value = false }, 2000)
+  }
+  catch {
+    // Clipboard unavailable (e.g. insecure context): the command stays selectable.
+  }
+}
 </script>
 
 <template>
@@ -83,34 +92,30 @@ const a11y = [
             <div class="column is-7-desktop">
               <p class="hero-tag">
                 <span class="dot" aria-hidden="true" />
-                In daily use · targets GNOME 51
+                In everyday use as a main desktop
               </p>
               <h1 id="hero-title" class="title is-1">
-                <span class="nowrap">A GNOME-compatible</span> desktop, <span class="gradient-text">written in&nbsp;Rust.</span>
+                A fresh desktop for Linux, <span class="gradient-text">with everything you already&nbsp;use.</span>
               </h1>
               <p class="subtitle mt-5">
-                Helix is an alternative desktop environment for Linux. It runs your
-                GNOME, GTK and libadwaita apps unmodified, keeps your GNOME settings,
-                and is built from GNOME’s public interfaces, not from its code.
+                Helix is a GNOME-compatible alternative desktop: your apps work as
+                they are, your settings come with you, and you can switch back from
+                the login screen any time.
               </p>
               <div class="buttons mt-6">
                 <NuxtLink to="/#install" class="button is-primary is-medium">
                   <span class="icon"><Icon name="lucide:download" /></span>
                   <span>Install Helix</span>
                 </NuxtLink>
-                <NuxtLink to="/docs" class="button is-ghost-light is-medium">
-                  <span class="icon"><Icon name="lucide:book-open" /></span>
-                  <span>Read the docs</span>
+                <NuxtLink to="/#tour" class="button is-ghost-light is-medium">
+                  <span class="icon"><Icon name="lucide:sparkles" /></span>
+                  <span>See what’s included</span>
                 </NuxtLink>
-                <a :href="links.desktop" class="button is-ghost-light is-medium" target="_blank" rel="noopener">
-                  <span class="icon"><Icon name="simple-icons:github" /></span>
-                  <span>GitHub</span>
-                </a>
               </div>
               <p class="hero-facts">
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Full Wayland session on real hardware</span>
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Clean-room, not a fork</span>
-                <span><span class="icon"><Icon name="lucide:circle-check" /></span>CC0, public domain</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Installs next to GNOME</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Keeps your apps and settings</span>
+                <span><span class="icon"><Icon name="lucide:circle-check" /></span>Free and open (CC0)</span>
               </p>
             </div>
             <div class="column is-5-desktop">
@@ -121,7 +126,7 @@ const a11y = [
                   height="582"
                   alt="The Helix notification list beside a calendar: grouped chat notifications, a mail and a software update notice, today's events, a world clock and media controls."
                 >
-                <figcaption>Notifications, calendar, world clocks and media controls in the Helix shell.</figcaption>
+                <figcaption>Notifications, your calendar, world clocks and media controls, side by side.</figcaption>
               </figure>
             </div>
           </div>
@@ -129,128 +134,185 @@ const a11y = [
       </div>
     </section>
 
-    <!-- Compatibility ---------------------------------------------------- -->
-    <section class="helix-section" aria-labelledby="compat-title">
+    <!-- Why Helix -------------------------------------------------------- -->
+    <section id="why" class="helix-section" aria-labelledby="why-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
             GNOME-compatible
           </p>
-          <h2 id="compat-title" class="title">
-            Bring your apps. Keep your settings.
+          <h2 id="why-title" class="title">
+            Try something new without starting over
           </h2>
           <p class="lead">
-            Helix offers the same public contracts a GNOME session does, so the
-            software you already use keeps working, and moving back and forth
-            between GNOME and Helix costs you nothing.
+            “GNOME-compatible” means Helix works with the same apps and settings
+            as the GNOME desktop that Ubuntu and many other Linux systems use. It
+            looks and feels like its own desktop, but your computer stays yours.
           </p>
         </div>
         <div class="columns is-multiline">
-          <div v-for="c in compat" :key="c.title" class="column is-4-desktop is-12-tablet">
+          <div v-for="b in benefits" :key="b.title" class="column is-4-desktop is-12-tablet">
             <div class="feature-card is-hoverable">
-              <span class="feature-icon" aria-hidden="true"><Icon :name="c.icon" /></span>
-              <h3>{{ c.title }}</h3>
-              <p>{{ c.text }}</p>
-            </div>
-          </div>
-        </div>
-        <p class="mt-5">
-          <NuxtLink to="/docs/gnome-compatibility" class="has-text-accent has-text-weight-semibold">
-            See exactly what is supported, and what isn’t →
-          </NuxtLink>
-        </p>
-      </div>
-    </section>
-
-    <!-- Contracts -------------------------------------------------------- -->
-    <section class="helix-section is-tinted" aria-labelledby="contracts-title">
-      <div class="container is-widescreen">
-        <div class="columns is-variable is-8-desktop is-vcentered">
-          <div class="column is-6-desktop">
-            <p class="eyebrow">
-              How it’s built
-            </p>
-            <h2 id="contracts-title" class="title is-size-2-desktop is-size-3-touch">
-              Built on GNOME’s contracts, not its code
-            </h2>
-            <p class="mb-4">
-              Helix is a clean-room implementation of the public contracts
-              applications and tools depend on: D-Bus interfaces, GSettings
-              schemas, xdg-desktop-portal and Wayland protocols. It is not a fork
-              of GNOME Shell or Mutter, and it is written in Rust from the
-              compositor up.
-            </p>
-            <p class="mb-4">
-              Every contract is written down first, in an open specification.
-              Where GNOME’s behaviour is undocumented, the spec records Helix’s
-              own choice, so other implementations can follow it or differ
-              knowingly. Helix is tested against those contracts.
-            </p>
-            <p>
-              GTK, libadwaita and GObject are used as they are: Helix
-              never reimplements the toolkit your apps are drawn with.
-            </p>
-          </div>
-          <div class="column is-6-desktop">
-            <div v-if="counts" class="stat-strip">
-              <NuxtLink to="/docs/contracts/dbus">
-                <strong>{{ counts.dbus }}</strong>
-                <span>D-Bus interface pages</span>
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts/gsettings">
-                <strong>{{ counts.gsettings }}</strong>
-                <span>GSettings schema pages</span>
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts/extensions">
-                <strong>{{ counts.extensions }}</strong>
-                <span>Extension API pages</span>
-              </NuxtLink>
-            </div>
-            <div class="pills mt-5">
-              <NuxtLink to="/docs/contracts/dbus" class="pill">
-                D-Bus interfaces
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts/gsettings" class="pill">
-                GSettings schemas
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts/wayland" class="pill">
-                Wayland protocols
-              </NuxtLink>
-              <NuxtLink to="/docs/contracts/dbus/org.freedesktop.impl.portal" class="pill">
-                Portals
-              </NuxtLink>
-              <NuxtLink to="/docs/proposals" class="pill">
-                Proposals
-              </NuxtLink>
+              <span class="feature-icon" aria-hidden="true"><Icon :name="b.icon" /></span>
+              <h3>{{ b.title }}</h3>
+              <p>{{ b.text }}</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- The desktop ------------------------------------------------------ -->
-    <section class="helix-section" aria-labelledby="desktop-title">
+    <!-- Install ---------------------------------------------------------- -->
+    <section id="install" class="helix-section is-tinted" aria-labelledby="install-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            Ready for daily use
+            Get Helix
           </p>
-          <h2 id="desktop-title" class="title">
-            A complete desktop, not a demo
+          <h2 id="install-title" class="title">
+            Install Helix in three steps
           </h2>
           <p class="lead">
-            Helix runs as a full Wayland session on real hardware and is used every
-            day as a primary desktop. It installs from packages and appears as a
-            <strong>Helix</strong> session at your login screen.
+            Helix has ready-made packages for Ubuntu and Debian, and also for
+            Fedora (.rpm) and Arch Linux, for regular PCs and for ARM computers
+            (Arch: PCs only). It sits next to your current desktop and doesn’t replace it.
+          </p>
+        </div>
+        <div class="columns is-variable is-8-desktop">
+          <div class="column is-7-desktop" style="min-width: 0">
+            <ol class="install-steps">
+              <li>
+                <h3>Download</h3>
+                <p>
+                  From the latest releases, download three packages:
+                  <strong>helix-desktop</strong> and <strong>helix-desktop-full</strong>,
+                  then <strong>helix-apps</strong>, which has releases of its own.
+                </p>
+                <div class="buttons mt-3">
+                  <a :href="links.desktopReleases" class="button is-primary" target="_blank" rel="noopener">
+                    <span class="icon"><Icon name="lucide:package" /></span>
+                    <span>Helix desktop</span>
+                  </a>
+                  <a :href="links.appsReleases" class="button" target="_blank" rel="noopener">
+                    <span class="icon"><Icon name="lucide:layout-grid" /></span>
+                    <span>Helix apps</span>
+                  </a>
+                </div>
+              </li>
+              <li>
+                <h3>Install</h3>
+                <p>
+                  Open a terminal in the folder you saved them to (usually
+                  Downloads) and install all three together. On Ubuntu or Debian:
+                </p>
+                <div class="command-box">
+                  <div class="command-bar">
+                    <span>Ubuntu and Debian</span>
+                    <button type="button" class="copy-button" @click="copyCommand">
+                      <span class="icon"><Icon :name="copied ? 'lucide:check' : 'lucide:copy'" /></span>
+                      <span>{{ copied ? 'Copied' : 'Copy' }}</span>
+                    </button>
+                  </div>
+                  <pre class="terminal" aria-label="Install command for Ubuntu and Debian"><span class="prompt">$ </span>sudo apt install ./helix-desktop_*.deb \
+    ./helix-desktop-full_*.deb ./helix-apps_*.deb</pre>
+                  <span class="is-sr-only" aria-live="polite">{{ copied ? 'Command copied' : '' }}</span>
+                </div>
+                <p class="is-size-7 has-text-weak mt-2">
+                  On Fedora or Arch, install the same three packages with your
+                  package manager; the
+                  <a :href="`${links.desktop}#installing-and-using-helix`" target="_blank" rel="noopener" class="has-text-accent">full install guide</a>
+                  has the details.
+                </p>
+              </li>
+              <li>
+                <h3>Log out and pick Helix</h3>
+                <p>
+                  At the login screen, choose <strong>Helix</strong> from the session
+                  menu (on Ubuntu, it’s the gear button that appears after you pick
+                  your name) and log in.
+                </p>
+              </li>
+            </ol>
+
+            <div class="reassure">
+              <span class="icon"><Icon name="lucide:undo-2" /></span>
+              <p>
+                <strong>Your GNOME session stays installed.</strong> To switch back,
+                log out and pick it again at the login screen. Your settings are
+                shared, so nothing gets lost either way.
+              </p>
+            </div>
+
+            <details class="install-extra">
+              <summary>For enthusiasts: use Helix’s own login screen</summary>
+              <p>
+                Optional, and for Ubuntu and Debian only for now. Install
+                <code>helix-greeter</code> (it brings in greetd), then switch login
+                screens and restart:
+              </p>
+              <pre class="terminal" aria-label="Commands to switch to the Helix login screen"><span class="prompt">$ </span>sudo systemctl disable gdm3
+<span class="prompt">$ </span>sudo systemctl enable greetd
+<span class="prompt">$ </span>sudo reboot</pre>
+              <p class="mt-3">
+                Switch back the same way, the other way round. If the login screen
+                doesn’t appear, press Ctrl+Alt+F3 for a text login.
+              </p>
+            </details>
+          </div>
+          <div class="column is-5-desktop">
+            <div class="feature-card is-auto-height">
+              <span class="feature-icon" aria-hidden="true"><Icon name="lucide:cpu" /></span>
+              <h3>Have an NVIDIA graphics card?</h3>
+              <p>
+                Helix needs the NVIDIA driver’s modesetting option turned on
+                (<code>nvidia-drm.modeset=1</code>). You only need to set it once.
+              </p>
+            </div>
+            <div class="feature-card is-auto-height mt-5">
+              <span class="feature-icon" aria-hidden="true"><Icon name="lucide:life-buoy" /></span>
+              <h3>Need a hand?</h3>
+              <p class="mb-4">
+                The full guide covers every step, and you can ask a question or
+                report a problem on GitHub.
+              </p>
+              <div class="buttons">
+                <a :href="`${links.desktop}#installing-and-using-helix`" class="button is-fullwidth" target="_blank" rel="noopener">
+                  <span class="icon"><Icon name="lucide:file-text" /></span>
+                  <span>Full install guide</span>
+                </a>
+                <a :href="links.desktopIssues" class="button is-fullwidth" target="_blank" rel="noopener">
+                  <span class="icon"><Icon name="lucide:message-circle" /></span>
+                  <span>Ask or report a problem</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tour ------------------------------------------------------------- -->
+    <section id="tour" class="helix-section" aria-labelledby="tour-title">
+      <div class="container is-widescreen">
+        <div class="section-head">
+          <p class="eyebrow">
+            What’s included
+          </p>
+          <h2 id="tour-title" class="title">
+            A complete desktop for every day
+          </h2>
+          <p class="lead">
+            Helix isn’t a demo. It’s a full desktop that people use every day,
+            with everything you’d expect to find.
           </p>
         </div>
         <div class="fixed-grid has-1-cols-mobile has-2-cols-tablet has-3-cols-desktop">
           <div class="grid">
-            <div v-for="p in parts" :key="p.title" class="cell">
+            <div v-for="t in tour" :key="t.title" class="cell">
               <div class="feature-card is-hoverable">
-                <span class="feature-icon" aria-hidden="true"><Icon :name="p.icon" /></span>
-                <h3>{{ p.title }}</h3>
-                <p>{{ p.text }}</p>
+                <span class="feature-icon" aria-hidden="true"><Icon :name="t.icon" /></span>
+                <h3>{{ t.title }}</h3>
+                <p>{{ t.text }}</p>
               </div>
             </div>
           </div>
@@ -278,7 +340,7 @@ const a11y = [
                 loading="lazy"
                 alt="The Helix login screen: a clock and date, a user's initials and name, a password field, Restart and Power Off buttons, and a session menu set to Helix."
               >
-              <figcaption>Helix’s own greetd login screen, here with a blue accent.</figcaption>
+              <figcaption>Helix’s own login screen, here with a blue accent.</figcaption>
             </figure>
           </div>
         </div>
@@ -286,26 +348,26 @@ const a11y = [
     </section>
 
     <!-- Apps + accessibility --------------------------------------------- -->
-    <section class="helix-section is-tinted" aria-labelledby="apps-title">
+    <section id="apps" class="helix-section is-tinted" aria-labelledby="apps-title">
       <div class="container is-widescreen">
         <div class="columns is-variable is-6-desktop">
           <div class="column is-6-desktop">
             <div class="feature-card">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:layout-grid" /></span>
               <h2 id="apps-title" class="title is-4 mb-3">
-                Apps of its own
+                Comes with its own apps
               </h2>
               <p>
-                <a :href="links.apps" target="_blank" rel="noopener" class="has-text-accent has-text-weight-semibold">helix-apps</a>
-                is Helix’s own suite of core applications, written in Rust with
-                GTK&nbsp;4 and libadwaita. Stock GNOME applications work just as well.
+                Helix installs with a set of everyday apps made for it: a file
+                manager, a terminal, a text editor, settings, a web browser and
+                more. The GNOME apps you already have work just as well.
               </p>
               <div class="tags are-medium is-app-list mt-4">
                 <span v-for="a in apps" :key="a" class="tag">{{ a }}</span>
                 <span class="tag">and more</span>
               </div>
               <a :href="links.apps" class="card-more" target="_blank" rel="noopener">
-                helix-apps on GitHub <Icon name="lucide:arrow-right" />
+                Meet the Helix apps <Icon name="lucide:arrow-right" />
               </a>
             </div>
           </div>
@@ -313,16 +375,17 @@ const a11y = [
             <div class="feature-card">
               <span class="feature-icon" aria-hidden="true"><Icon name="lucide:accessibility" /></span>
               <h2 class="title is-4 mb-3">
-                Accessible, and yours
+                Accessible, and made to fit you
               </h2>
+              <p>Helix is built to be usable by everyone, the way you like it.</p>
               <ul class="ticks">
                 <li v-for="a in a11y" :key="a">
                   {{ a }}
                 </li>
               </ul>
               <p class="is-size-7 has-text-weak mt-3">
-                Some shell surfaces are still being brought to screen readers and
-                Large Text; the gaps are tracked in the open.
+                A few parts of the desktop don’t work with screen readers or larger
+                text yet. We track those openly and are working through them.
               </p>
             </div>
           </div>
@@ -331,77 +394,78 @@ const a11y = [
     </section>
 
     <!-- Differences ------------------------------------------------------ -->
-    <section class="helix-section" aria-labelledby="diff-title">
+    <section id="differences" class="helix-section" aria-labelledby="diff-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
-            Honest about the differences
+            Before you switch
           </p>
           <h2 id="diff-title" class="title">
-            Compatible where it counts, different on purpose
+            Familiar where it matters, thoughtful in the details
           </h2>
           <p class="lead">
-            Helix aims for compatibility wherever software depends on it, and makes
-            its own choices everywhere else.
+            Trying Helix doesn’t lock you in: GNOME stays on your computer and you
+            can move between the two from the login screen. Here’s what to expect.
           </p>
         </div>
         <div class="columns is-variable is-6-desktop">
           <div class="column">
             <h3 class="title is-5">
-              Where Helix differs
+              Thoughtful touches
             </h3>
             <ul class="diff-list">
               <li>
-                <span class="icon"><Icon name="lucide:palette" /></span>
-                <span><strong>Its own design.</strong> The panel, quick settings, overview,
-                  dialogs and lock screen are Helix’s own, with WCAG AA text contrast,
-                  visible focus rings and reduced motion. Your apps still look like
-                  GNOME apps, because GTK and libadwaita draw them.</span>
-              </li>
-              <li>
                 <span class="icon"><Icon name="lucide:shield-check" /></span>
-                <span><strong>Safer dialogs.</strong> Enter picks the safe choice
-                  (Wait, Deny, Cancel), and keys pressed in the first 300&nbsp;ms after a
-                  dialog appears are ignored.</span>
+                <span><strong>Safe choices by default.</strong> When a dialog pops
+                  up, pressing Enter picks the safe option, like Cancel or Deny, and
+                  keys pressed the instant it appears are ignored, so you can’t
+                  approve something by accident.</span>
               </li>
               <li>
-                <span class="icon"><Icon name="lucide:panel-bottom" /></span>
-                <span><strong>A dock out of the box.</strong> It follows a subset of
-                  Ubuntu’s Dash to Dock settings.</span>
+                <span class="icon"><Icon name="lucide:puzzle" /></span>
+                <span><strong>Extensions can’t crash your desktop.</strong> Each
+                  extension runs on its own, so a broken one can’t take the rest of
+                  the desktop down with it.</span>
               </li>
               <li>
-                <span class="icon"><Icon name="lucide:life-buoy" /></span>
-                <span><strong>A sturdier session.</strong> A crashed app can’t block
-                  logout forever, and the session ends cleanly if a core service goes
-                  away.</span>
+                <span class="icon"><Icon name="lucide:power" /></span>
+                <span><strong>Logging out just works.</strong> An app that has
+                  crashed can’t hold up logging out forever.</span>
+              </li>
+              <li>
+                <span class="icon"><Icon name="lucide:palette" /></span>
+                <span><strong>A look of its own.</strong> The top bar, overview and
+                  lock screen are Helix’s own design, with easy-to-read text and visible
+                  keyboard focus. Your apps look just as they do now.</span>
               </li>
             </ul>
           </div>
           <div class="column">
             <h3 class="title is-5">
-              What Helix doesn’t do
+              Good to know
             </h3>
             <ul class="diff-list">
-              <li class="is-no">
-                <span class="icon"><Icon name="lucide:circle-x" /></span>
-                <span><strong>GNOME Shell extensions.</strong> They patch GNOME Shell’s
-                  internal, unstable APIs. Helix keeps their settings so tools don’t
-                  break, and offers its own isolated extension system instead.</span>
+              <li class="is-note">
+                <span class="icon"><Icon name="lucide:info" /></span>
+                <span><strong>GNOME Shell extensions don’t run.</strong> Helix has
+                  its own extensions instead. Your GNOME extensions stay installed
+                  for when you go back to GNOME.</span>
               </li>
-              <li class="is-no">
-                <span class="icon"><Icon name="lucide:circle-x" /></span>
-                <span><strong>A pixel-perfect GNOME Shell look.</strong> GNOME Shell’s
-                  appearance isn’t a public contract, so copying it isn’t a goal.</span>
+              <li class="is-note">
+                <span class="icon"><Icon name="lucide:info" /></span>
+                <span><strong>It doesn’t look exactly like GNOME.</strong> Helix
+                  works with GNOME’s apps and settings, but it isn’t a copy of
+                  GNOME’s desktop.</span>
               </li>
-              <li class="is-no">
-                <span class="icon"><Icon name="lucide:circle-x" /></span>
-                <span><strong>GDM.</strong> GDM’s login screen is GNOME Shell itself.
-                  You can still pick Helix from GDM, or use Helix’s own login
-                  screen.</span>
+              <li class="is-note">
+                <span class="icon"><Icon name="lucide:info" /></span>
+                <span><strong>It’s young software.</strong> The desktop itself is
+                  in English only for now, and some hardware, like touchscreens
+                  and drawing tablets, hasn’t been tried on real devices yet.</span>
               </li>
             </ul>
             <NuxtLink to="/docs/gnome-compatibility" class="button is-primary is-outlined mt-4">
-              <span>Read the compatibility summary</span>
+              <span>See what works and what doesn’t</span>
               <span class="icon"><Icon name="lucide:arrow-right" /></span>
             </NuxtLink>
           </div>
@@ -409,83 +473,38 @@ const a11y = [
       </div>
     </section>
 
-    <!-- Install ---------------------------------------------------------- -->
-    <section id="install" class="helix-section is-tinted" aria-labelledby="install-title">
+    <!-- How it works ----------------------------------------------------- -->
+    <section id="how-it-works" class="helix-section is-tinted" aria-labelledby="how-title">
       <div class="container is-widescreen">
-        <div class="section-head">
-          <p class="eyebrow">
-            Get started
-          </p>
-          <h2 id="install-title" class="title">
-            Install Helix
-          </h2>
-          <p class="lead">
-            Every release ships packages for Debian and Ubuntu (.deb), Fedora
-            (.rpm) and Arch Linux, for x86_64 and aarch64 (Arch: x86_64).
-            Helix installs alongside your current desktop.
-          </p>
-        </div>
-        <div class="columns is-variable is-8-desktop">
-          <div class="column is-7-desktop" style="min-width: 0">
-            <ol class="install-steps">
-              <li>
-                <h3>Install the packages</h3>
-                <p>
-                  Download <code>helix-desktop</code> and <code>helix-desktop-full</code>
-                  from a release, and <code>helix-apps</code> from its own releases.
-                  Install them together; the full package brings in Helix’s apps,
-                  Xwayland, xdg-desktop-portal, the GNOME schemas, dconf and PipeWire.
-                </p>
-                <pre class="terminal" aria-label="Install command for Debian and Ubuntu"><span class="prompt">$ </span>sudo apt install ./helix-desktop_*.deb \
-    ./helix-desktop-full_*.deb ./helix-apps_*.deb</pre>
-              </li>
-              <li>
-                <h3>Log out and pick Helix</h3>
-                <p>
-                  Choose <strong>Helix</strong> from your login screen’s session menu
-                  (GDM’s gear button, for example) and log in. Your GNOME settings
-                  come with you. On NVIDIA, KMS must be on
-                  (<code>nvidia-drm.modeset=1</code>).
-                </p>
-              </li>
-              <li>
-                <h3>Optional: Helix’s own login screen</h3>
-                <p>
-                  Install <code>helix-greeter</code> (it needs greetd; Debian and
-                  Ubuntu for now) and switch display managers. Switch back the same way.
-                </p>
-                <pre class="terminal" aria-label="Commands to switch to the greetd login screen"><span class="prompt">$ </span>sudo systemctl disable gdm3
-<span class="prompt">$ </span>sudo systemctl enable greetd
-<span class="prompt">$ </span>sudo reboot</pre>
-              </li>
-            </ol>
+        <div class="columns is-variable is-8-desktop is-vcentered">
+          <div class="column is-7-desktop">
+            <p class="eyebrow">
+              For the technically curious
+            </p>
+            <h2 id="how-title" class="title is-size-3-desktop is-size-4-touch">
+              How Helix works
+            </h2>
+            <p>
+              Helix is an independent desktop, built in Rust for reliability. It
+              isn’t a fork of GNOME: it speaks the same public interfaces that
+              GNOME’s apps and tools rely on, and every one of them is written down
+              in an open specification. The docs tell the whole story.
+            </p>
           </div>
           <div class="column is-5-desktop">
-            <div class="feature-card is-auto-height">
-              <h3>Downloads and guides</h3>
-              <p class="mb-4">
-                Packages are published as GitHub releases with a
-                <code>SHA256SUMS</code> file.
-              </p>
-              <div class="buttons">
-                <a :href="links.desktopReleases" class="button is-primary is-fullwidth" target="_blank" rel="noopener">
-                  <span class="icon"><Icon name="lucide:package" /></span>
-                  <span>helix-desktop releases</span>
-                </a>
-                <a :href="links.appsReleases" class="button is-fullwidth" target="_blank" rel="noopener">
-                  <span class="icon"><Icon name="lucide:layout-grid" /></span>
-                  <span>helix-apps releases</span>
-                </a>
-                <a :href="`${links.desktop}#installing-and-using-helix`" class="button is-fullwidth" target="_blank" rel="noopener">
-                  <span class="icon"><Icon name="lucide:file-text" /></span>
-                  <span>Full install guide</span>
-                </a>
-              </div>
-              <p class="is-size-7 has-text-weak">
-                Known gaps are tracked as
-                <a :href="links.desktopIssues" target="_blank" rel="noopener" class="has-text-accent">helix-desktop issues</a>
-                labelled <code>gap</code> and <code>needs-hardware</code>.
-              </p>
+            <div class="pills">
+              <NuxtLink to="/docs" class="pill">
+                Read the docs
+              </NuxtLink>
+              <NuxtLink to="/docs/gnome-compatibility" class="pill">
+                GNOME compatibility
+              </NuxtLink>
+              <NuxtLink to="/docs/scope" class="pill">
+                Scope
+              </NuxtLink>
+              <NuxtLink to="/docs/contracts" class="pill">
+                Interfaces and contracts
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -499,15 +518,16 @@ const a11y = [
           <div class="columns is-vcentered is-variable is-6-desktop">
             <div class="column is-5-desktop">
               <h2 id="source-title" class="title is-3">
-                Open from the spec up
+                Free and open, for everyone
               </h2>
               <p class="mb-5">
-                Three repositories, all dedicated to the public domain. Read the
-                specification, follow the work, or send a fix.
+                Helix, its apps and its specification are dedicated to the public
+                domain (CC0): free to use, share and change, with no strings
+                attached. Follow along, report a problem or help out.
               </p>
-              <NuxtLink to="/docs" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(184, 75%, 38%), hsl(196, 80%, 38%)); border: none">
-                <span>Read the docs</span>
-                <span class="icon"><Icon name="lucide:arrow-right" /></span>
+              <NuxtLink to="/#install" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(184, 75%, 38%), hsl(196, 80%, 38%)); border: none">
+                <span class="icon"><Icon name="lucide:download" /></span>
+                <span>Install Helix</span>
               </NuxtLink>
             </div>
             <div class="column is-7-desktop">
@@ -515,9 +535,9 @@ const a11y = [
                 <div class="grid">
                   <a
                     v-for="r in [
-                      { name: 'helix-desktop', href: links.desktop, text: 'Compositor, shell, session, portals and login screen.' },
+                      { name: 'helix-desktop', href: links.desktop, text: 'The desktop itself, and its login screen.' },
                       { name: 'helix-apps', href: links.apps, text: 'Files, Terminal, Text Editor, Settings, Web and more.' },
-                      { name: 'helix-desktop-spec', href: links.spec, text: 'The living specification and contracts behind these docs.' },
+                      { name: 'helix-desktop-spec', href: links.spec, text: 'The open specification behind the docs.' },
                     ]"
                     :key="r.name"
                     :href="r.href"

@@ -9,10 +9,10 @@ watch(() => route.fullPath, () => { menuOpen.value = false })
 const items = computed(() => {
   const p = route.path
   return [
-    { label: 'Docs', to: '/docs', active: p.startsWith('/docs') && !p.startsWith('/docs/contracts') && !p.startsWith('/docs/gnome-compatibility') },
-    { label: 'Compatibility', to: '/docs/gnome-compatibility', active: p.startsWith('/docs/gnome-compatibility') },
-    { label: 'Contracts', to: '/docs/contracts', active: p.startsWith('/docs/contracts') },
+    { label: 'Features', to: '/#tour', active: false },
     { label: 'Install', to: '/#install', active: false },
+    { label: 'Compatibility', to: '/docs/gnome-compatibility', active: p.startsWith('/docs/gnome-compatibility') },
+    { label: 'Docs', to: '/docs', active: p.startsWith('/docs') && !p.startsWith('/docs/gnome-compatibility') },
   ]
 })
 </script>

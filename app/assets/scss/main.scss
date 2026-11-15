@@ -707,6 +707,95 @@ main {
   }
 }
 
+// Install command with a copy button (landing page).
+.command-box {
+  margin-top: 0.75rem;
+  border-radius: var(--bulma-radius);
+  overflow: hidden;
+  border: 1px solid hsla(190, 50%, 50%, 0.15);
+  background: hsl(207, 40%, 9%);
+
+  .terminal {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+}
+
+.command-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.5rem 0.4rem 1.15rem;
+  border-bottom: 1px solid hsla(190, 50%, 50%, 0.15);
+  color: hsl(200, 20%, 70%);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.copy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--bulma-radius-small);
+  border: 1px solid hsla(190, 50%, 70%, 0.25);
+  background: hsla(0, 0%, 100%, 0.06);
+  color: hsl(180, 30%, 90%);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background: hsla(0, 0%, 100%, 0.12);
+    border-color: hsla(186, 70%, 65%, 0.5);
+  }
+
+  .icon svg {
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.reassure {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: var(--bulma-radius-large);
+  background: hsla(186, 70%, 40%, 0.1);
+  border: 1px solid hsla(186, 60%, 40%, 0.28);
+
+  .icon {
+    flex: none;
+    color: var(--helix-accent-text);
+    margin-top: 0.1rem;
+  }
+
+  strong {
+    color: var(--bulma-text-strong);
+  }
+}
+
+.install-extra {
+  border-radius: var(--bulma-radius-large);
+  border: 1px solid var(--helix-border);
+  background: var(--helix-surface-raised);
+  padding: 0.85rem 1.25rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--bulma-text-strong);
+  }
+
+  &[open] summary {
+    margin-bottom: 0.75rem;
+  }
+}
+
 .repo-card {
   display: block;
   padding: 1.1rem 1.35rem;
