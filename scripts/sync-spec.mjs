@@ -28,7 +28,7 @@ const DOCS_PREFIX = '/docs'
 
 // Order of known top-level entries; anything else is appended alphabetically.
 const ORDER = {
-  '': ['README.md', 'SCOPE.md', 'components', 'contracts', 'proposals', 'gaps.md'],
+  '': ['README.md', 'SCOPE.md', 'gnome-compatibility.md', 'components', 'contracts', 'proposals'],
   contracts: ['README.md', 'dbus', 'gsettings', 'wayland', 'extensions'],
 }
 

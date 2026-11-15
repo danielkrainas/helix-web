@@ -1,6 +1,6 @@
 <template>
-  <span class="inline-flex items-center gap-2 font-semibold text-highlighted">
-    <img src="/favicon.svg" alt="" class="size-7">
-    <span class="text-lg tracking-tight">Helix</span>
+  <span class="helix-logo">
+    <img src="/favicon.svg" alt="" width="32" height="32">
+    <span>Helix</span>
   </span>
 </template>

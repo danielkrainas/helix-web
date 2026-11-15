@@ -15,21 +15,22 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.154",
-    "@iconify-json/simple-icons": "^1.2.102",
-    "@nuxt/content": "^3.16.2",
-    "@nuxt/ui": "^4.12.0",
-    "fast-xml-parser": "^5.12.0",
-    "nuxt": "^4.6.4",
-    "tailwindcss": "^4.3.5"
+    "@iconify-json/lucide": "1.2.154",
+    "@iconify-json/simple-icons": "1.2.102",
+    "@nuxt/content": "3.16.2",
+    "@nuxt/icon": "2.6.2",
+    "bulma": "1.0.4",
+    "fast-xml-parser": "5.12.0",
+    "nuxt": "4.6.4"
   },
   "helix": {
     "specDir": "../helix-desktop-spec"
   },
   "devDependencies": {
-    "@nuxt/kit": "^4.6.4",
-    "@types/node": "^24",
-    "typescript": "^5.9.3",
-    "vue-tsc": "^3.3.14"
+    "@nuxt/kit": "4.6.4",
+    "@types/node": "24.19.2",
+    "sass": "1.108.2",
+    "typescript": "5.9.3",
+    "vue-tsc": "3.3.14"
   }
 }

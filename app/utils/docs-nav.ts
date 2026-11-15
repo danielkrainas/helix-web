@@ -17,7 +17,7 @@ export function docsNavigation(navigation: ContentNavigationItem[] | null | unde
     if (index && children.length === 1) return { ...item, children: undefined, page: undefined }
     return {
       ...item,
-      children: children.map(c => (c === index ? { ...c, title: 'Overview', icon: 'i-lucide-book-open', exact: true } : c)),
+      children: children.map(c => (c === index ? { ...c, title: 'Overview', exact: true } : c)),
     }
   }
 

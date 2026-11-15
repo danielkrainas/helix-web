@@ -1,31 +1,24 @@
 <script setup lang="ts">
 const { data: navigation } = await useAsyncData('docs-navigation', () => queryCollectionNavigation('docs'))
-const { data: files } = useLazyAsyncData('docs-search', () => queryCollectionSearchSections('docs'), { server: false })
 
 provide('navigation', navigation)
 
 useSeoMeta({
-  titleTemplate: title => (title && title !== 'Helix' ? `${title} · Helix` : 'Helix — a Rust desktop for GNOME apps'),
+  titleTemplate: title => (title && title !== 'Helix' ? `${title} · Helix` : 'Helix — a GNOME-compatible desktop, written in Rust'),
   ogSiteName: 'Helix',
 })
 </script>
 
 <template>
-  <UApp>
-    <AppHeader />
-    <UMain>
-      <NuxtLayout>
-        <NuxtPage />
-      </NuxtLayout>
-    </UMain>
-    <AppFooter />
-
-    <ClientOnly>
-      <LazyUContentSearch
-        :files="files"
-        :navigation="navigation"
-        :fuse="{ resultLimit: 42 }"
-      />
-    </ClientOnly>
-  </UApp>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <AppHeader />
+  <main id="main" tabindex="-1">
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </main>
+  <AppFooter />
+  <ClientOnly>
+    <AppSearch />
+  </ClientOnly>
 </template>
