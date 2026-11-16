@@ -6,7 +6,7 @@
 .cache
 dist
 
-# Generated from helix-desktop-spec (scripts/sync-spec.mjs)
+# Generated from helixdesktop/spec (scripts/sync-spec.mjs)
 .spec
 
 # Node

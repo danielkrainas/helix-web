@@ -53,9 +53,9 @@ export default defineNuxtConfig({
     defaultLocale,
     locales,
     vueI18n: './i18n.config.ts',
-    // The site's origin (e.g. https://helix.example), needed for the absolute
-    // URLs of hreflang alternates once there is more than one language.
-    baseUrl: process.env.HELIX_SITE_URL ?? '',
+    // The site's origin, needed for the absolute URLs of hreflang alternates
+    // once there is more than one language.
+    baseUrl: process.env.HELIX_SITE_URL ?? 'https://helixdesktop.org',
     // The browser's language may be suggested, never forced: no redirects.
     detectBrowserLanguage: false,
   },

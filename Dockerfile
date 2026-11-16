@@ -5,18 +5,18 @@
 #   docker build -t helix-web .
 #   docker run --rm -p 8080:8080 helix-web
 #
-# The docs are generated from helix-desktop-spec. By default the `spec`
+# The docs are generated from helixdesktop/spec. By default the `spec`
 # stage clones it from GitHub (SPEC_REF picks the branch or tag). To build
 # from a local checkout instead, override that stage with a named context:
 #
-#   docker build --build-context spec=../helix-desktop-spec -t helix-web .
+#   docker build --build-context spec=../spec -t helix-web .
 
 ARG NODE_IMAGE=node:22.14.0-bookworm-slim
 ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.27.4-alpine
 
 # --- spec: the specification the docs are built from ----------------------
 FROM alpine/git:v2.47.2 AS spec
-ARG SPEC_REPO=https://github.com/danielkrainas/helix-desktop-spec.git
+ARG SPEC_REPO=https://github.com/helixdesktop/spec.git
 ARG SPEC_REF=main
 RUN git clone --depth 1 --branch "$SPEC_REF" "$SPEC_REPO" /spec && rm -rf /spec/.git
 WORKDIR /spec

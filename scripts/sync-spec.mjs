@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Builds the /docs content tree from the canonical Helix specification
-// (helix-desktop-spec). The spec location is read from package.json
-// ("helix.specDir", relative to this project) and can be overridden with the
-// HELIX_SPEC_DIR environment variable.
+// (helixdesktop/spec). The spec is a sibling checkout (../spec, or
+// ../helix-desktop-spec, its former name) unless package.json sets
+// "helix.specDir" (relative to this project); the HELIX_SPEC_DIR environment
+// variable overrides both.
 //
 // What it does:
 //   - copies every Markdown file into .spec/ with frontmatter (title,
@@ -36,7 +37,11 @@ export function resolveSpecDir(override) {
   const fromEnv = override || process.env.HELIX_SPEC_DIR
   if (fromEnv) return path.resolve(ROOT, fromEnv)
   const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'))
-  return path.resolve(ROOT, pkg.helix?.specDir ?? '../helix-desktop-spec')
+  if (pkg.helix?.specDir) return path.resolve(ROOT, pkg.helix.specDir)
+  // A sibling checkout: `spec` (the repository's name) or
+  // `helix-desktop-spec` (its former name).
+  const candidates = ['../spec', '../helix-desktop-spec'].map((p) => path.resolve(ROOT, p))
+  return candidates.find((p) => fs.existsSync(p)) ?? candidates[0]
 }
 
 function git(specDir, ...args) {

@@ -3,7 +3,7 @@ import { defineCollection, defineContentConfig, z } from '@nuxt/content'
 
 export default defineContentConfig({
   collections: {
-    // Generated from the helix-desktop-spec checkout by modules/helix-spec.ts
+    // Generated from the helixdesktop/spec checkout by modules/helix-spec.ts
     // (see scripts/sync-spec.mjs). Do not edit .spec/ by hand.
     docs: defineCollection({
       type: 'page',

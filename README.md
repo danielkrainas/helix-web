@@ -1,4 +1,4 @@
-# helix-web
+# web
 
 Landing page and documentation site for **Helix**, a GNOME-compatible desktop
 environment written in Rust and built on GNOME's public contracts.
@@ -43,11 +43,12 @@ pnpm check-i18n   # no hard-coded text in components; every message key exists i
 ## Docs come from the spec
 
 Everything under `/docs` is built from the canonical specification repository,
-[`helix-desktop-spec`](https://github.com/danielkrainas/helix-desktop-spec). The
-path to that checkout is set in `package.json`:
+[`helixdesktop/spec`](https://github.com/helixdesktop/spec), read from a
+sibling checkout: `../spec`, or `../helix-desktop-spec` (its former name). To
+use another path, set it in `package.json`:
 
 ```json
-"helix": { "specDir": "../helix-desktop-spec" }
+"helix": { "specDir": "../my-spec-checkout" }
 ```
 
 Override it with `HELIX_SPEC_DIR=/path/to/spec pnpm dev` (needed in a git
@@ -81,15 +82,15 @@ button and accessibility labels, alt text, page titles and descriptions, the
 404 page and the docs page chrome — comes from message files, one per
 language, in `i18n/locales/`. English (`en.json`) is the source and the only
 language so far; the planned languages are tracked in
-[issue #1](https://github.com/danielkrainas/helix-web/issues/1).
+[issue #1](https://github.com/helixdesktop/web/issues/1).
 
 - English stays at the root URLs (`/`, `/docs/…`). Every other language gets
   a prefix: `/es/`, `/zh-cn/docs/…` (strategy `prefix_except_default`).
 - `<html lang>` follows the page's language. Once there are two or more
   languages, every page also gets `hreflang` alternates (plus `x-default`)
   and the header shows a language picker; with English alone neither is
-  rendered. Set `HELIX_SITE_URL` (e.g. `https://helix.example`) at build time
-  so the alternates are absolute URLs.
+  rendered. The alternates are absolute URLs on `https://helixdesktop.org`;
+  set `HELIX_SITE_URL` at build time to build for another origin.
 - A message missing from a translation falls back to English, never to its
   key. The browser's language is never used to redirect.
 
@@ -174,8 +175,8 @@ long-lived caching for `/_nuxt/` assets, security headers, real 404s and a
 `/healthz` endpoint).
 
 ```bash
-docker build -t helix-web .                      # clones helix-desktop-spec from GitHub
-docker build --build-context spec=../helix-desktop-spec -t helix-web .   # use a local spec checkout
+docker build -t helix-web .                      # clones helixdesktop/spec from GitHub
+docker build --build-context spec=../spec -t helix-web .   # use a local spec checkout
 docker run --rm -p 8080:8080 helix-web           # http://localhost:8080
 ```
 
