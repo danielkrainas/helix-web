@@ -190,6 +190,33 @@ docker run --rm -p 8080:8080 helix-web           # http://localhost:8080
 Build arguments: `SPEC_REF` (branch or tag of the spec, default `main`),
 `SPEC_REPO`, `NODE_IMAGE` and `NGINX_IMAGE`.
 
+## Kubernetes
+
+`charts/helix-web` is a Helm chart that runs the Docker image above: a
+Deployment (two replicas by default, spread across nodes, rolling updates
+with no downtime), a Service on port 80, and optionally an Ingress or a
+Gateway API HTTPRoute, a HorizontalPodAutoscaler and a NetworkPolicy. The pods
+run as nginx's unprivileged user with a read-only root filesystem (only `/tmp`
+is writable), no service account token, and `/healthz` for the probes.
+
+```bash
+helm install helix-web charts/helix-web \
+  --namespace helix-web --create-namespace \
+  --set image.tag=0.1.0 \
+  --set ingress.enabled=true --set ingress.className=nginx \
+  --set 'ingress.tls[0].secretName=helixdesktop-org-tls' \
+  --set 'ingress.tls[0].hosts[0]=helixdesktop.org'
+helm test helix-web --namespace helix-web
+```
+
+The image defaults to `ghcr.io/helixdesktop/web` with the chart's
+`appVersion` as the tag; build and push it with the `docker build` above (or
+set `image.repository`, `image.tag` or `image.digest`). For a Gateway, set
+`httpRoute.enabled=true` and `httpRoute.parentRefs`. With `replicaCount: 1`,
+turn off `podDisruptionBudget` so node drains aren't blocked. Every option is
+documented in `charts/helix-web/values.yaml`. Check changes with
+`helm lint --strict charts/helix-web`.
+
 ## Layout
 
 ```
@@ -214,4 +241,5 @@ content.config.ts         the `docs` collection (source: .spec/)
 modules/helix-spec.ts     sync + watch + prerender routes
 scripts/sync-spec.mjs     spec -> .spec/ transform
 scripts/check-i18n.mjs    hard-coded text and message key check
+charts/helix-web/         Helm chart for Kubernetes deployments
 ```

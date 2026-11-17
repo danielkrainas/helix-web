@@ -1,0 +1,121 @@
+# Values for the helix-web chart. The image is built from the repository's
+# Dockerfile: nginx-unprivileged serving the generated site on port 8080.
+
+replicaCount: 2
+
+image:
+  repository: ghcr.io/helixdesktop/web
+  # Defaults to the chart's appVersion.
+  tag: ""
+  # Takes precedence over the tag when set (e.g. "sha256:…").
+  digest: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  # The site makes no calls to the Kubernetes API.
+  automount: false
+
+podAnnotations: {}
+podLabels: {}
+
+# nginxinc/nginx-unprivileged runs as uid 101 (nginx).
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+  fsGroup: 101
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: [ALL]
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: helixdesktop.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: helixdesktop-org-tls
+  #    hosts:
+  #      - helixdesktop.org
+
+# Gateway API alternative to the Ingress.
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: public-gateway
+  #    namespace: gateway-system
+  #    sectionName: https
+  hostnames:
+    - helixdesktop.org
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 16Mi
+  limits:
+    memory: 64Mi
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 30
+  timeoutSeconds: 3
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  periodSeconds: 10
+  timeoutSeconds: 3
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+# Turn this off when replicaCount is 1, or it blocks node drains.
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Allow ingress traffic to the pods only from these peers (empty: from anywhere).
+networkPolicy:
+  enabled: false
+  from: []
+  #  - namespaceSelector:
+  #      matchLabels:
+  #        kubernetes.io/metadata.name: ingress-nginx
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# Spread replicas across nodes by default (soft).
+topologySpreadConstraints: []
+
+extraEnv: []
+extraVolumes: []
+extraVolumeMounts: []

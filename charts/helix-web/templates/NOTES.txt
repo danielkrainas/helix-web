@@ -1,0 +1,19 @@
+helix-web {{ .Chart.AppVersion }} is deployed as {{ include "helix-web.fullname" . }} ({{ include "helix-web.image" . }}).
+{{- if .Values.ingress.enabled }}
+
+The site is served at:
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}/
+{{- end }}
+{{- else if .Values.httpRoute.enabled }}
+
+The site is routed through the Gateway for:
+{{- range .Values.httpRoute.hostnames }}
+  {{ . }}
+{{- end }}
+{{- else }}
+
+No Ingress or HTTPRoute is enabled. To look at the site locally:
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "helix-web.fullname" . }} 8080:{{ .Values.service.port }}
+  then open http://localhost:8080/
+{{- end }}
