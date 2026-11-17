@@ -476,7 +476,7 @@ async function copyCommand() {
               <p class="mb-5">
                 {{ t('home.source.text') }}
               </p>
-              <NuxtLinkLocale to="/#install" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(184, 75%, 38%), hsl(196, 80%, 38%)); border: none">
+              <NuxtLinkLocale to="/#install" class="button is-primary is-medium" style="background: linear-gradient(135deg, hsl(234, 52%, 44%), hsl(246, 56%, 44%)); border: none">
                 <span class="icon"><Icon name="lucide:download" /></span>
                 <span>{{ t('home.source.install') }}</span>
               </NuxtLinkLocale>

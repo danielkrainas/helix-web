@@ -21,7 +21,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'en', class: 'has-navbar-fixed-top' },
       meta: [
         { name: 'color-scheme', content: 'light dark' },
-        { name: 'theme-color', content: '#0b3b4a' },
+        { name: 'theme-color', content: '#17194f' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
