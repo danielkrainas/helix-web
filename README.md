@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/helixdesktop/.github/main/brand/helix-logo-vertical-dark.svg">
+    <img src="https://raw.githubusercontent.com/helixdesktop/.github/main/brand/helix-logo-vertical.svg" alt="Helix" width="140">
+  </picture>
+</p>
+
 # web
 
 Landing page and documentation site for **Helix**, a GNOME-compatible desktop
