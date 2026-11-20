@@ -15,11 +15,16 @@ ARG NODE_IMAGE=node:22.14.0-bookworm-slim
 ARG NGINX_IMAGE=nginxinc/nginx-unprivileged:1.27.4-alpine
 
 # --- spec: the specification the docs are built from ----------------------
-FROM alpine/git:v2.47.2 AS spec
+FROM alpine/git:v2.47.2 AS spec-clone
 ARG SPEC_REPO=https://github.com/helixdesktop/spec.git
 ARG SPEC_REF=main
 RUN git clone --depth 1 --branch "$SPEC_REF" "$SPEC_REPO" /spec && rm -rf /spec/.git
-WORKDIR /spec
+
+# Only the checkout, at the root, so this stage has the same shape as a
+# `--build-context spec=../spec` override (copying the clone stage's root
+# would bring the whole git image along and put the docs under /docs/spec).
+FROM scratch AS spec
+COPY --from=spec-clone /spec /
 
 # --- build: generate the static site --------------------------------------
 FROM ${NODE_IMAGE} AS build

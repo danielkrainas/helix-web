@@ -49,11 +49,23 @@ const toc = computed(() => {
   return out
 })
 
-// Breadcrumb from the URL: /docs/contracts/dbus/x -> Docs › contracts › dbus
-const crumbs = computed(() => {
+// Breadcrumb from the URL: /docs/contracts/dbus/x -> Docs › contracts › dbus.
+// A folder without a page of its own (no README in the spec) is shown
+// unlinked, so the breadcrumb never points at a page that doesn't exist.
+const crumbPaths = computed(() => {
   const parts = path.value.split('/').filter(Boolean).slice(1, -1)
-  return parts.map((p, i) => ({ label: p, to: `/docs/${parts.slice(0, i + 1).join('/')}` }))
+  return parts.map((p, i) => ({ label: p, path: `/docs/${parts.slice(0, i + 1).join('/')}` }))
 })
+const { data: crumbPages } = await useAsyncData(`docs-crumbs:${path.value}`, async () => {
+  const paths = crumbPaths.value.map(c => c.path)
+  if (!paths.length) return [] as string[]
+  const found = await queryCollection('docs').where('path', 'IN', paths).select('path').all()
+  return found.map(f => f.path)
+})
+const crumbs = computed(() => crumbPaths.value.map(c => ({
+  label: c.label,
+  to: crumbPages.value?.includes(c.path) ? c.path : undefined,
+})))
 
 // Highlight the heading currently in view in the on-page nav.
 const activeId = ref('')
@@ -88,8 +100,9 @@ useSeoMeta({
         <nav v-if="crumbs.length" class="breadcrumb mb-3" :aria-label="t('docs.breadcrumbLabel')">
           <ul>
             <li><NuxtLinkLocale to="/docs">{{ t('docs.breadcrumbRoot') }}</NuxtLinkLocale></li>
-            <li v-for="c in crumbs" :key="c.to">
-              <NuxtLinkLocale :to="c.to">{{ c.label }}</NuxtLinkLocale>
+            <li v-for="c in crumbs" :key="c.label">
+              <NuxtLinkLocale v-if="c.to" :to="c.to">{{ c.label }}</NuxtLinkLocale>
+              <span v-else class="crumb-plain">{{ c.label }}</span>
             </li>
           </ul>
         </nav>
@@ -155,3 +168,14 @@ useSeoMeta({
     </aside>
   </div>
 </template>
+
+<style scoped>
+/* Bulma pads breadcrumb links; an unlinked folder lines up with them. */
+.breadcrumb .crumb-plain {
+  padding: 0 0.75em;
+  color: var(--bulma-text-weak);
+}
+.breadcrumb li:first-child .crumb-plain {
+  padding-left: 0;
+}
+</style>
