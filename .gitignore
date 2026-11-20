@@ -20,3 +20,6 @@ node_modules
 .env
 .env.*
 !.env.example
+
+# Local Helm values for the live deployment (not committed)
+.live-values.yaml

@@ -13,3 +13,4 @@ dist
 .env.*
 Dockerfile
 .dockerignore
+.live-values.yaml
