@@ -20,6 +20,16 @@ const tour = [
   { icon: 'lucide:layout-grid', title: 'home.tour.appGrid.title', text: 'home.tour.appGrid.text' },
   { icon: 'lucide:camera', title: 'home.tour.screenshots.title', text: 'home.tour.screenshots.text' },
   { icon: 'lucide:lock-keyhole', title: 'home.tour.lock.title', text: 'home.tour.lock.text' },
+  { icon: 'lucide:folder-open', title: 'home.tour.fileChooser.title', text: 'home.tour.fileChooser.text' },
+  { icon: 'lucide:languages', title: 'home.tour.languages.title', text: 'home.tour.languages.text' },
+  { icon: 'lucide:puzzle', title: 'home.tour.extensions.title', text: 'home.tour.extensions.text' },
+]
+
+const agentPoints = [
+  { icon: 'lucide:layers-3', title: 'home.agents.levels.title', text: 'home.agents.levels.text' },
+  { icon: 'lucide:octagon-x', title: 'home.agents.indicator.title', text: 'home.agents.indicator.text' },
+  { icon: 'lucide:shield-off', title: 'home.agents.never.title', text: 'home.agents.never.text' },
+  { icon: 'lucide:scroll-text', title: 'home.agents.log.title', text: 'home.agents.log.text' },
 ]
 
 const apps = [
@@ -42,6 +52,7 @@ const touches = [
   { icon: 'lucide:shield-check', title: 'home.differences.safeChoices.title', text: 'home.differences.safeChoices.text' },
   { icon: 'lucide:puzzle', title: 'home.differences.extensions.title', text: 'home.differences.extensions.text' },
   { icon: 'lucide:power', title: 'home.differences.logout.title', text: 'home.differences.logout.text' },
+  { icon: 'lucide:lock', title: 'home.differences.hardened.title', text: 'home.differences.hardened.text' },
   { icon: 'lucide:palette', title: 'home.differences.look.title', text: 'home.differences.look.text' },
 ]
 
@@ -64,6 +75,15 @@ const nvidiaOption = 'nvidia-drm.modeset=1'
 const installCommand = 'sudo apt install ./helix-desktop_*.deb ./helix-desktop-full_*.deb ./helix-apps_*.deb'
 const installLines = ['sudo apt install ./helix-desktop_*.deb \\\n    ./helix-desktop-full_*.deb ./helix-apps_*.deb']
 const greeterOnLines = ['sudo systemctl disable gdm.service', 'sudo systemctl enable --force greetd.service', 'sudo reboot']
+// A short Agent Access session (helix-agent, contracts/agent-access/cli.md).
+const agentCommand = 'helix-agent'
+const agentLogCommand = 'helix-agent log'
+const agentLines = [
+  'helix-agent request --level desktop',
+  'helix-agent files search invoice --since yesterday',
+  'helix-agent confirm "Open yesterday’s invoice?"',
+  'helix-agent open ~/Documents/invoice-0412.pdf',
+]
 const greeterOffLines = ['sudo systemctl disable greetd.service', 'sudo systemctl enable --force gdm.service', 'sudo reboot']
 
 const copied = ref(false)
@@ -117,6 +137,11 @@ async function copyCommand() {
                 <span><span class="icon"><Icon name="lucide:circle-check" /></span>{{ t('home.hero.facts.keepsSettings') }}</span>
                 <span><span class="icon"><Icon name="lucide:circle-check" /></span>{{ t('home.hero.facts.free') }}</span>
               </p>
+              <NuxtLinkLocale to="/agents" class="hero-note">
+                <span class="icon"><Icon name="lucide:bot" /></span>
+                <span>{{ t('home.hero.agents') }} <strong>{{ t('home.hero.agentsLink') }}</strong></span>
+                <span class="icon"><Icon name="lucide:arrow-right" /></span>
+              </NuxtLinkLocale>
             </div>
             <div class="column is-5-desktop">
               <figure class="screen-frame">
@@ -160,8 +185,59 @@ async function copyCommand() {
       </div>
     </section>
 
+    <!-- Agent Access ----------------------------------------------------- -->
+    <section id="agents" class="helix-section is-tinted" aria-labelledby="agents-title">
+      <div class="container is-widescreen">
+        <div class="section-head">
+          <p class="eyebrow">
+            {{ t('home.agents.eyebrow') }}
+          </p>
+          <h2 id="agents-title" class="title">
+            {{ t('home.agents.title') }}
+          </h2>
+          <i18n-t keypath="home.agents.lead" tag="p" class="lead">
+            <template #command>
+              <code>{{ agentCommand }}</code>
+            </template>
+          </i18n-t>
+        </div>
+        <div class="columns is-variable is-8-desktop">
+          <div class="column is-7-desktop">
+            <ul class="diff-list">
+              <li v-for="p in agentPoints" :key="p.title">
+                <span class="icon"><Icon :name="p.icon" /></span>
+                <span>
+                  <strong>{{ t(p.title) }}</strong>&#32;<i18n-t :keypath="p.text" tag="span">
+                    <template #command>
+                      <code>{{ agentLogCommand }}</code>
+                    </template>
+                  </i18n-t>
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="column is-5-desktop" style="min-width: 0">
+            <p class="is-size-7 has-text-weak">
+              {{ t('home.agents.terminalCaption') }}
+            </p>
+            <TerminalCommands :commands="agentLines" :label="t('home.agents.terminalLabel')" />
+            <div class="buttons mt-5">
+              <NuxtLinkLocale to="/agents" class="button is-primary">
+                <span>{{ t('home.agents.learnMore') }}</span>
+                <span class="icon"><Icon name="lucide:arrow-right" /></span>
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/contracts/agent-access" class="button is-primary is-outlined">
+                <span class="icon"><Icon name="lucide:file-text" /></span>
+                <span>{{ t('home.agents.contract') }}</span>
+              </NuxtLinkLocale>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Install ---------------------------------------------------------- -->
-    <section id="install" class="helix-section is-tinted" aria-labelledby="install-title">
+    <section id="install" class="helix-section" aria-labelledby="install-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
@@ -252,6 +328,9 @@ async function copyCommand() {
                 {{ t('home.install.greeter.back') }}
               </p>
               <TerminalCommands :commands="greeterOffLines" :label="t('home.install.greeter.backLabel')" />
+              <p class="mt-3">
+                {{ t('home.install.greeter.settings') }}
+              </p>
             </details>
           </div>
           <div class="column is-5-desktop">
@@ -287,7 +366,7 @@ async function copyCommand() {
     </section>
 
     <!-- Tour ------------------------------------------------------------- -->
-    <section id="tour" class="helix-section" aria-labelledby="tour-title">
+    <section id="tour" class="helix-section is-tinted" aria-labelledby="tour-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
@@ -342,7 +421,7 @@ async function copyCommand() {
     </section>
 
     <!-- Apps + accessibility --------------------------------------------- -->
-    <section id="apps" class="helix-section is-tinted" aria-labelledby="apps-title">
+    <section id="apps" class="helix-section" aria-labelledby="apps-title">
       <div class="container is-widescreen">
         <div class="columns is-variable is-6-desktop">
           <div class="column is-6-desktop">
@@ -385,7 +464,7 @@ async function copyCommand() {
     </section>
 
     <!-- Differences ------------------------------------------------------ -->
-    <section id="differences" class="helix-section" aria-labelledby="diff-title">
+    <section id="differences" class="helix-section is-tinted" aria-labelledby="diff-title">
       <div class="container is-widescreen">
         <div class="section-head">
           <p class="eyebrow">
@@ -430,7 +509,7 @@ async function copyCommand() {
     </section>
 
     <!-- How it works ----------------------------------------------------- -->
-    <section id="how-it-works" class="helix-section is-tinted" aria-labelledby="how-title">
+    <section id="how-it-works" class="helix-section" aria-labelledby="how-title">
       <div class="container is-widescreen">
         <div class="columns is-variable is-8-desktop is-vcentered">
           <div class="column is-7-desktop">
@@ -457,6 +536,12 @@ async function copyCommand() {
               </NuxtLinkLocale>
               <NuxtLinkLocale to="/docs/contracts" class="pill">
                 {{ t('home.how.contracts') }}
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/contracts/agent-access" class="pill">
+                {{ t('home.how.agents') }}
+              </NuxtLinkLocale>
+              <NuxtLinkLocale to="/docs/contracts/extensions" class="pill">
+                {{ t('home.how.extensions') }}
               </NuxtLinkLocale>
             </div>
           </div>

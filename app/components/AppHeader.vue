@@ -14,9 +14,11 @@ const items = computed(() => {
   const p = path.value
   return [
     { label: t('header.nav.features'), to: '/#tour', active: false },
+    { label: t('header.nav.agents'), to: '/agents', active: p === '/agents' },
     { label: t('header.nav.install'), to: '/#install', active: false },
     { label: t('header.nav.compatibility'), to: '/docs/gnome-compatibility', active: p.startsWith('/docs/gnome-compatibility') },
     { label: t('header.nav.docs'), to: '/docs', active: p.startsWith('/docs') && !p.startsWith('/docs/gnome-compatibility') },
+    { label: t('header.nav.news'), to: '/news', active: p.startsWith('/news') },
   ]
 })
 </script>

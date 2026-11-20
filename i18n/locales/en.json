@@ -16,9 +16,11 @@
     "menu": "Menu",
     "nav": {
       "features": "Features",
+      "agents": "Agents",
       "install": "Install",
       "compatibility": "Compatibility",
-      "docs": "Docs"
+      "docs": "Docs",
+      "news": "News"
     },
     "search": {
       "label": "Search the docs",
@@ -45,7 +47,8 @@
       "introduction": "Introduction",
       "scope": "Scope",
       "compatibility": "GNOME compatibility",
-      "contracts": "Contracts"
+      "contracts": "Contracts",
+      "agentAccess": "Agent Access"
     },
     "source": {
       "label": "Source code",
@@ -56,7 +59,9 @@
       "heading": "Get Helix",
       "install": "Install",
       "releases": "Releases",
-      "issues": "Issues"
+      "issues": "Issues",
+      "news": "News",
+      "feed": "News feed (Atom)"
     },
     "legal": "GNOME is a trademark of the GNOME Foundation. Helix is an independent project; it is not affiliated with or endorsed by the GNOME Foundation."
   },
@@ -120,7 +125,9 @@
         "free": "Free and open (CC0)"
       },
       "imageAlt": "The Helix notification list beside a calendar: grouped chat notifications, a mail and a software update notice, today's events, a world clock and media controls.",
-      "imageCaption": "Notifications, your calendar, world clocks and media controls, side by side."
+      "imageCaption": "Notifications, your calendar, world clocks and media controls, side by side.",
+      "agents": "New: Agent Access, so AI agents and command-line tools can work with your desktop under your control.",
+      "agentsLink": "How it works"
     },
     "why": {
       "eyebrow": "GNOME-compatible",
@@ -173,7 +180,8 @@
         "intro": "Optional, and for Ubuntu and Debian only for now. Install {package} (it brings in greetd), then switch login screens and restart:",
         "switchLabel": "Commands to switch to the Helix login screen",
         "back": "To switch back, or if the login screen doesn’t appear (press Ctrl+Alt+F3 for a text login first):",
-        "backLabel": "Commands to switch back to GDM"
+        "backLabel": "Commands to switch back to GDM",
+        "settings": "Once it’s in use, Settings has a Login Screen panel for its options: the user list, a banner, the accent colour and the clock format."
       },
       "nvidia": {
         "title": "Have an NVIDIA graphics card?",
@@ -212,12 +220,24 @@
       },
       "lock": {
         "title": "Lock and login screens",
-        "text": "A lock screen with media controls and notification summaries, and, if you want it, Helix’s own login screen."
+        "text": "A lock screen with media controls and notification summaries, and, if you want it, Helix’s own login screen, with its options in Settings."
       },
       "quickSettingsAlt": "Helix quick settings: volume and brightness sliders, toggles for Wi-Fi, Bluetooth, airplane mode, night light, dark style and do not disturb, power modes, and lock, suspend, log out, restart and power off.",
       "quickSettingsCaption": "Quick settings, in a teal accent colour.",
       "loginAlt": "The Helix login screen: a clock and date, a user's initials and name, a password field, Restart and Power Off buttons, and a session menu set to Helix.",
-      "loginCaption": "Helix’s own login screen, here with a blue accent."
+      "loginCaption": "Helix’s own login screen, here with a blue accent.",
+      "fileChooser": {
+        "title": "Open and save dialogs",
+        "text": "One file chooser for every app, in Helix’s look: places, a list or a grid of thumbnails, and the same settings as GTK’s own."
+      },
+      "languages": {
+        "title": "In 12 languages",
+        "text": "The desktop, lock and login screens come in Spanish, French, German, Portuguese, Russian, Chinese, Japanese and more, with right-to-left layouts mirrored."
+      },
+      "extensions": {
+        "title": "Extensions of its own",
+        "text": "Add panel items, quick settings toggles and dock items. Each extension runs as its own program, and can run in a sandbox."
+      }
     },
     "apps": {
       "title": "Comes with its own apps",
@@ -274,9 +294,13 @@
       },
       "young": {
         "title": "It’s young software.",
-        "text": "The desktop itself is in English only for now, and some hardware, like touchscreens and drawing tablets, hasn’t been tried on real devices yet."
+        "text": "Its translations into 12 languages are machine translations still awaiting review, and some hardware, like touchscreens and drawing tablets, hasn’t been tried on real devices yet."
       },
-      "link": "See what works and what doesn’t"
+      "link": "See what works and what doesn’t",
+      "hardened": {
+        "title": "Hardened where it counts.",
+        "text": "Thumbnails are made in a sandbox, the desktop’s private interfaces check who is calling, and links and downloads from untrusted places ask before they open."
+      }
     },
     "how": {
       "eyebrow": "For the technically curious",
@@ -285,7 +309,9 @@
       "docs": "Read the docs",
       "compatibility": "GNOME compatibility",
       "scope": "Scope",
-      "contracts": "Interfaces and contracts"
+      "contracts": "Interfaces and contracts",
+      "agents": "Agent Access",
+      "extensions": "Extensions"
     },
     "source": {
       "title": "Free and open, for everyone",
@@ -294,6 +320,204 @@
       "desktop": "The desktop itself, and its login screen.",
       "apps": "Files, Terminal, Text Editor, Settings, Web and more.",
       "spec": "The open specification behind the docs."
+    },
+    "agents": {
+      "eyebrow": "First-class agent support",
+      "title": "Let AI agents help, on your terms",
+      "lead": "Agent Access lets coding assistants, scripts and other agents read your desktop and act on it through the {command} command. The desktop itself enforces what they may do, and it stays off until you turn it on.",
+      "levels": {
+        "title": "Four levels, you choose the most.",
+        "text": "Read only, Control the desktop, Control apps, and Screen and input. Each agent gets no more than you approve in a prompt that only you, at the computer, can answer."
+      },
+      "indicator": {
+        "title": "Always visible, always stoppable.",
+        "text": "While an agent is at work, the top bar shows it, with Stop. Touch the keyboard or pointer and an agent’s typing and clicking stops at once."
+      },
+      "never": {
+        "title": "Some things are never exposed.",
+        "text": "The lock screen, password fields, system password prompts and Settings are off limits, and so is any app you exclude."
+      },
+      "log": {
+        "title": "A log of what it did.",
+        "text": "Every request is recorded, refused ones too, without the text or secrets involved. Read it in Settings or with {command}."
+      },
+      "terminalCaption": "With access at the Control the desktop level:",
+      "terminalLabel": "Example helix-agent commands",
+      "learnMore": "How Agent Access works",
+      "contract": "Read the contract"
     }
+  },
+  "agents": {
+    "meta": {
+      "title": "Agent Access",
+      "description": "Agent Access lets AI agents and command-line tools read and act on your Helix desktop through helix-agent, with access levels, consent prompts, an indicator with Stop, exclusions and an activity log you control."
+    },
+    "hero": {
+      "tag": "Agent Access",
+      "title": "AI agents on your desktop, {highlight}",
+      "titleHighlight": "with you in control.",
+      "subtitle": "Coding assistants, scripts and other agents can read your Helix session and act on it through the {command} command. The desktop decides what they may do, asks you before any agent gets access, and shows you when one is at work.",
+      "docs": "Read the contract",
+      "cli": "Command reference",
+      "offNote": "Off by default. Turn it on in {path}."
+    },
+    "settingsPath": "Settings › Privacy & Security › Agent Access",
+    "principles": {
+      "eyebrow": "The ground rules",
+      "title": "How it stays in your hands",
+      "shell": {
+        "title": "The desktop enforces it",
+        "text": "The shell checks every request itself. {command} is a thin client with no rules of its own, so a program that talks to the shell directly meets exactly the same checks."
+      },
+      "consent": {
+        "title": "You approve each agent",
+        "text": "The first time an agent asks, a prompt names it and the access it wants: Deny, Allow for this session, or Always allow. Agents can’t answer it, neither over D-Bus nor with synthetic input. Deny has the focus, and keys and clicks in its first second are ignored."
+      },
+      "off": {
+        "title": "Off until you turn it on",
+        "text": "Nothing is allowed until you switch Agent Access on. Turning it off ends every agent’s access at once."
+      },
+      "noSelfGrant": {
+        "title": "No way to grant itself access",
+        "text": "No request lets an agent give itself access, and changing settings grants nothing by itself. Sandboxed apps (Flatpak, Snap) are refused outright."
+      }
+    },
+    "levels": {
+      "eyebrow": "Access levels",
+      "title": "Four levels, each including the one before",
+      "lead": "You set the most any agent may have, and each agent gets no more than you approved in its prompt. Lowering the level narrows every agent at once; raising it widens none.",
+      "readOnly": {
+        "name": "Read only",
+        "text": "See windows, apps, workspaces, monitors, notifications and recent files, search files and wait for windows. Ask you a question, ask for a yes or no, or set you a reminder."
+      },
+      "desktop": {
+        "name": "Control the desktop",
+        "text": "Also launch apps, open files and links, manage windows and workspaces, switch quick settings, set volume and brightness, and show notifications labelled with the agent’s name."
+      },
+      "apps": {
+        "name": "Control apps",
+        "text": "Also read and use apps’ buttons, fields and menus through the accessibility tree, the way a screen reader does."
+      },
+      "screen": {
+        "name": "Screen and input",
+        "text": "Also take screenshots and send keys, text, clicks and scrolling into one window. Settings offers this level on its own, behind a warning."
+      },
+      "switchesTitle": "Separate switches",
+      "on": "On by default",
+      "off": "Off by default",
+      "notifications": {
+        "name": "Notifications",
+        "text": "Agents may read notification titles and bodies. Without it they see only which app sent one, and when."
+      },
+      "clipboard": {
+        "name": "Clipboard",
+        "text": "Agents may read and set the clipboard. Even then, what Settings, system prompts and excluded apps copied, and password managers’ secrets, stay out of reach."
+      },
+      "textFields": {
+        "name": "Read text fields",
+        "text": "Agents that control apps may read what is typed in apps’ text fields."
+      },
+      "confirm": {
+        "name": "Confirm sensitive actions",
+        "text": "You confirm each sensitive action before it happens: closing a window, switching Wi-Fi or airplane mode, and anything an agent marks as sending, deleting or paying."
+      },
+      "remote": {
+        "name": "Remote sessions",
+        "text": "Agents running in a remote login (SSH) are refused unless you allow them."
+      }
+    },
+    "watch": {
+      "eyebrow": "While it runs",
+      "title": "You can always see it, and stop it",
+      "indicator": {
+        "title": "An indicator in the top bar",
+        "text": "While an agent is active, the top bar shows an indicator, like the one for screen sharing. It can’t be turned off. Its menu lists each active agent and its level, and says so when an agent is taking screenshots or sending input."
+      },
+      "stop": {
+        "title": "Stop, for each agent",
+        "text": "Stop ends that agent’s access straight away. Even an agent you always allow is suspended for the rest of the session: its next request asks you again."
+      },
+      "hardStop": {
+        "title": "Your input wins",
+        "text": "Press a key, click, move the pointer, scroll or touch the screen, and an agent’s typing and clicking stops at once, even in the middle of a word. New input from agents is refused for the next two seconds."
+      },
+      "locked": {
+        "title": "Nothing while locked",
+        "text": "While the screen is locked, agents can do nothing at all, and a consent prompt that was showing goes away unanswered."
+      }
+    },
+    "never": {
+      "eyebrow": "Off limits",
+      "title": "What agents never get",
+      "lead": "These aren’t settings, and they can’t be turned off.",
+      "lockScreen": "The lock screen and the login screen.",
+      "passwords": "Password fields: their contents are never read, and agents can’t set them or type into them.",
+      "prompts": "System prompts: while a password, keyring, network, Bluetooth pairing or consent prompt is open, agents can’t read apps, take screenshots, send input or use the clipboard.",
+      "settings": "The Settings app, so no agent can reach the Agent Access page.",
+      "excluded": "Apps you exclude: their windows are left out of every list, they can’t be launched or controlled, and they appear black in screenshots.",
+      "screenshots": "Screenshots are drawn by the compositor, with the desktop’s dialogs, notifications and protected windows blacked out. The pointer is never drawn."
+    },
+    "settings": {
+      "eyebrow": "Settings",
+      "title": "One page for all of it",
+      "text": "{path} holds the main switch, the access level, whether agents are asked every session or may be remembered, the switches above and your excluded apps. It lists the agents you allowed, by their real program, with Revoke, Forget and Revoke All, and the reminders agents have set for you."
+    },
+    "log": {
+      "eyebrow": "Accountability",
+      "title": "An activity log you can read",
+      "text": "The shell records every agent request, refused ones included, and your answers to its prompts. Open it with View Activity in Settings, or run {command}.",
+      "private": "The log never holds what agents typed or read: no text, clipboard contents, notification text, window titles, field values or search queries, and for a link only its scheme and host.",
+      "retention": "Entries stay in your own files for 30 days by default (anything from 1 to 365), and you can clear them from Settings."
+    },
+    "cli": {
+      "eyebrow": "For agents and their authors",
+      "title": "One command for agents",
+      "lead": "{command} prints readable text on a terminal and JSON when its output is piped, with its own exit code for every kind of refusal, so an agent can tell when it needs you. It comes with a man page and completions for bash, zsh and fish.",
+      "exampleLabel": "An example session with helix-agent",
+      "name": "Set {variable} to show your agent’s name in prompts, the indicator and the log. The name is for display only: agents are told apart by their program.",
+      "refusal": "When access is off, the answer says so, and where to change it:",
+      "refusalLabel": "The JSON answer when Agent Access is off"
+    },
+    "limits": {
+      "eyebrow": "Good to know",
+      "title": "What it doesn’t do",
+      "isolation": {
+        "title": "It isn’t a sandbox.",
+        "text": "A program you run unconfined can already change your files and settings. Agent Access governs what agents do through the desktop, and makes sure no request can get access without you."
+      },
+      "sensitive": {
+        "title": "The desktop can’t tell what a click does.",
+        "text": "Agents should mark sending, deleting and paying as sensitive so you’re asked first; closing windows and switching Wi-Fi or airplane mode always count."
+      },
+      "x11": {
+        "title": "Password fields need the app’s help.",
+        "text": "Typing into a password field is blocked when the app reports it, as GTK, Qt, Firefox and Chromium do; older X11 apps can’t be checked."
+      }
+    },
+    "docs": {
+      "title": "The full details",
+      "lead": "Agent Access is specified in the open, like everything else in Helix.",
+      "contract": "Agent Access contract",
+      "cli": "helix-agent command reference",
+      "interface": "The shell’s D-Bus interface",
+      "settings": "Settings keys"
+    }
+  },
+  "news": {
+    "meta": {
+      "title": "News",
+      "description": "News from the Helix desktop project: releases, progress and notes."
+    },
+    "eyebrow": "News",
+    "title": "News from Helix",
+    "lead": "Releases, progress and notes from the project.",
+    "empty": "No news yet.",
+    "readMore": "Read more",
+    "byline": "By {author}",
+    "back": "All news",
+    "englishOnly": "News posts are written in English and aren’t translated.",
+    "feed": "Subscribe (Atom feed)",
+    "feedTitle": "Helix news",
+    "notFound": "Post not found"
   }
 }

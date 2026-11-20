@@ -466,6 +466,60 @@ main {
       color: hsl(234, 49%, 60%);
     }
   }
+
+  // A link under the hero's facts (Agent Access).
+  .hero-note {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    max-width: 38rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--bulma-radius-large);
+    background: hsla(234, 49%, 56%, 0.1);
+    border: 1px solid hsla(234, 49%, 60%, 0.3);
+    color: hsl(246, 27%, 86%);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+
+    strong {
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .icon {
+      flex: none;
+      color: hsl(234, 63%, 72%);
+    }
+
+    &:hover {
+      background: hsla(234, 49%, 56%, 0.18);
+      border-color: hsla(234, 49%, 65%, 0.5);
+    }
+  }
+
+  code {
+    color: #fff;
+    background: hsla(0, 0%, 100%, 0.1);
+    padding: 0.1em 0.35em;
+    border-radius: 0.3em;
+    font-size: 0.9em;
+  }
+
+  // A shorter hero heading a page other than the homepage.
+  &.is-page-hero .hero-body {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  &.is-page-hero .subtitle {
+    max-width: 46rem;
+  }
+
+  .hero-facts strong {
+    color: #fff;
+  }
 }
 
 .screen-frame {
@@ -892,6 +946,200 @@ main {
   .title {
     color: #fff;
   }
+}
+
+// ---------------------------------------------------------------------------
+// Agents page
+
+.level-ladder {
+  list-style: none;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+
+  > li {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--bulma-radius-large);
+    background: var(--helix-surface-raised);
+    border: 1px solid var(--helix-border);
+    box-shadow: var(--helix-shadow);
+  }
+
+  // Each level is a little further in, as it includes the ones before.
+  @media screen and (min-width: 1024px) {
+    @for $i from 2 through 4 {
+      > li:nth-child(#{$i}) {
+        margin-left: #{($i - 1) * 2}rem;
+      }
+    }
+  }
+
+  .level-step {
+    flex: none;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--helix-display);
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, hsl(234, 50%, 38%), hsl(246, 55%, 46%));
+  }
+
+  h3 {
+    font-family: var(--helix-display);
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--bulma-text-strong);
+    margin-bottom: 0.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+
+    .icon {
+      color: var(--helix-accent-text);
+    }
+  }
+
+  .level-value {
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+}
+
+.switch-list .tag {
+  vertical-align: 0.1em;
+}
+
+.doc-links {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.doc-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: var(--bulma-radius-large);
+  background: var(--helix-surface-raised);
+  border: 1px solid var(--helix-border);
+  color: var(--bulma-text);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+
+  > span:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  strong {
+    color: var(--bulma-text-strong);
+  }
+
+  code {
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+  }
+
+  .icon {
+    flex: none;
+    color: var(--helix-accent-text);
+  }
+
+  &:hover {
+    border-color: hsla(234, 42%, 51%, 0.5);
+    transform: translateY(-2px);
+  }
+}
+
+.terminal.is-wrapped {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+// ---------------------------------------------------------------------------
+// News
+
+.news-list {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 52rem;
+}
+
+.news-card {
+  display: block;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--bulma-radius-large);
+  background: var(--helix-surface-raised);
+  border: 1px solid var(--helix-border);
+  box-shadow: var(--helix-shadow);
+  color: var(--bulma-text);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--helix-shadow-lift);
+    border-color: hsla(234, 42%, 51%, 0.5);
+  }
+
+  h2 {
+    font-family: var(--helix-display);
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--bulma-text-strong);
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .card-more {
+    margin-top: 0.75rem;
+    font-weight: 600;
+    color: var(--helix-accent-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+}
+
+.news-meta {
+  color: var(--bulma-text-weak);
+  font-size: 0.9375rem;
+}
+
+.news-article {
+  max-width: 46rem;
+  margin: 0 auto;
+
+  .title {
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
+    line-height: 1.15;
+  }
+
+  .news-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--helix-border);
+  }
+
+  .news-footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--helix-border);
+  }
+}
+
+.feed-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--helix-accent-text);
 }
 
 // ---------------------------------------------------------------------------

@@ -45,6 +45,7 @@ const specDate = spec.date ? new Date(spec.date).toISOString().slice(0, 10) : ''
             <li><NuxtLinkLocale to="/docs/scope">{{ t('footer.docs.scope') }}</NuxtLinkLocale></li>
             <li><NuxtLinkLocale to="/docs/gnome-compatibility">{{ t('footer.docs.compatibility') }}</NuxtLinkLocale></li>
             <li><NuxtLinkLocale to="/docs/contracts">{{ t('footer.docs.contracts') }}</NuxtLinkLocale></li>
+            <li><NuxtLinkLocale to="/agents">{{ t('footer.docs.agentAccess') }}</NuxtLinkLocale></li>
           </ul>
         </nav>
         <nav class="column is-4-tablet is-2-desktop" :aria-label="t('footer.source.label')">
@@ -65,6 +66,8 @@ const specDate = spec.date ? new Date(spec.date).toISOString().slice(0, 10) : ''
             <li><NuxtLinkLocale to="/#install">{{ t('footer.get.install') }}</NuxtLinkLocale></li>
             <li><a :href="links.desktopReleases" target="_blank" rel="noopener">{{ t('footer.get.releases') }}</a></li>
             <li><a :href="links.desktopIssues" target="_blank" rel="noopener">{{ t('footer.get.issues') }}</a></li>
+            <li><NuxtLinkLocale to="/news">{{ t('footer.get.news') }}</NuxtLinkLocale></li>
+            <li><a href="/feed.xml">{{ t('footer.get.feed') }}</a></li>
           </ul>
         </nav>
       </div>

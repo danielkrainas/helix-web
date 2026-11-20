@@ -30,7 +30,9 @@ const DOCS_PREFIX = '/docs'
 // Order of known top-level entries; anything else is appended alphabetically.
 const ORDER = {
   '': ['README.md', 'SCOPE.md', 'gnome-compatibility.md', 'components', 'contracts', 'proposals'],
-  contracts: ['README.md', 'dbus', 'gsettings', 'wayland', 'extensions'],
+  'contracts': ['README.md', 'dbus', 'gsettings', 'wayland', 'extensions', 'agent-access'],
+  // Agent Access: the behaviour first, then the CLI, then the interfaces.
+  'contracts/agent-access': ['README.md', 'cli.md', 'org.helixdesktop.Agent1.xml', 'org.helixdesktop.AgentAccess1.xml'],
 }
 
 export function resolveSpecDir(override) {
@@ -106,8 +108,8 @@ function outPath(id) {
   parts.forEach((part, i) => {
     const isLast = i === parts.length - 1
     const order = ORDER[parent]
-    // A leaf file in the ORDER table is listed with its .md name.
-    const key = isLast ? [part, `${part}.md`] : [part]
+    // A leaf file in the ORDER table is listed with its .md or .xml name.
+    const key = isLast ? [part, `${part}.md`, `${part}.xml`] : [part]
     const idx = order ? order.findIndex(o => key.includes(o)) : -1
     outParts.push(idx >= 0 ? `${idx}.${part}` : part)
     parent = parent ? `${parent}/${part}` : part
@@ -287,6 +289,8 @@ function frontmatter(data) {
 function kindOf(id) {
   if (id.startsWith('contracts/dbus/')) return 'dbus'
   if (id.startsWith('contracts/extensions/')) return 'extensions'
+  // Agent Access's interfaces are D-Bus pages; its README and cli.md are prose.
+  if (id.startsWith('contracts/agent-access/org.')) return 'dbus'
   if (id.startsWith('contracts/gsettings/')) return 'gsettings'
   if (id.startsWith('contracts/wayland')) return 'wayland'
   if (id.startsWith('proposals/')) return 'proposal'

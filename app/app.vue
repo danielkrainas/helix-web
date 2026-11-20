@@ -10,6 +10,11 @@ useSeoMeta({
   titleTemplate: title => (title && title !== t('site.name') ? t('site.titleTemplate', { title }) : t('site.defaultTitle')),
   ogSiteName: () => t('site.name'),
 })
+
+// The news feed, for feed readers that look for it on any page.
+useHead(() => ({
+  link: [{ rel: 'alternate', type: 'application/atom+xml', href: '/feed.xml', title: t('news.feedTitle') }],
+}))
 </script>
 
 <template>

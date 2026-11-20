@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Order matters: helix-spec must generate .spec/ before Nuxt Content scans it.
-  modules: ['./modules/helix-spec', '@nuxt/icon', '@nuxt/content', '@nuxtjs/i18n'],
+  modules: ['./modules/helix-spec', './modules/news', '@nuxt/icon', '@nuxt/content', '@nuxtjs/i18n'],
 
   css: ['~/assets/scss/main.scss'],
 
@@ -65,6 +65,8 @@ export default defineNuxtConfig({
     public: {
       // Filled in by modules/helix-spec.ts
       spec: { repoUrl: '', branch: 'main', commit: '', date: '' },
+      // The site's origin, for the absolute links of the news feed.
+      siteUrl: process.env.HELIX_SITE_URL ?? 'https://helixdesktop.org',
     },
   },
 

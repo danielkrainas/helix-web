@@ -17,5 +17,23 @@ export default defineContentConfig({
         sources: z.array(z.string()).optional(),
       }),
     }),
+    // News posts: Markdown files in content/news/, one per post, written in
+    // English. The file name is the URL (content/news/hello.md -> /news/hello).
+    // See "News" in the README.
+    news: defineCollection({
+      type: 'page',
+      source: {
+        cwd: resolve(__dirname, 'content/news'),
+        include: '*.md',
+        prefix: '/news',
+      },
+      schema: z.object({
+        // title and description are the page fields every page has.
+        date: z.date(),
+        author: z.string().optional(),
+        // Drafts are left out of the list, the feed and the generated site.
+        draft: z.boolean().default(false),
+      }),
+    }),
   },
 })

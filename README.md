@@ -13,8 +13,8 @@ environment written in Rust and built on GNOME's public contracts.
 Stack:
 
 - [Nuxt 4](https://nuxt.com), generated as a static site;
-- [Nuxt Content](https://content.nuxt.com) for `/docs` (Markdown rendered with
-  MDC; code highlighted by Shiki with light and dark themes);
+- [Nuxt Content](https://content.nuxt.com) for `/docs` and `/news` (Markdown
+  rendered with MDC; code highlighted by Shiki with light and dark themes);
 - [Bulma 1](https://bulma.io), compiled from Sass in
   `app/assets/scss/main.scss` and themed through Bulma's CSS variables (Helix's
   teal/blue palette, Inter, Sora and JetBrains Mono from Google Fonts);
@@ -72,7 +72,10 @@ Content reads as the `docs` collection. It:
 - rewrites links and `` `file.md` `` / `` `file.xml` `` references so they
   point at the matching docs page;
 - orders the top-level sections (Introduction, Scope, GNOME compatibility,
-  Components, Contracts, Proposals).
+  Components, Contracts, Proposals), the contracts (D-Bus, GSettings,
+  Wayland, Extensions, Agent Access) and the Agent Access pages (overview,
+  `helix-agent`, then its interfaces); see `ORDER` in the script. A new
+  spec directory shows up by itself, after the ordered entries.
 
 The local module `modules/helix-spec.ts` runs the sync when Nuxt starts and,
 in `pnpm dev`, watches the spec checkout and re-syncs on change, so edits to
@@ -81,6 +84,40 @@ prerendering. To run the sync on its own: `pnpm sync-spec`.
 
 Each docs page links back to its source files in the spec repository, and the
 footer shows the spec commit the site was built from.
+
+## News
+
+News posts are Markdown files in `content/news/`, in English, one per post.
+The file name is the post's URL: `content/news/introducing-helix.md` is
+`/news/introducing-helix` (keep it lower-case, words joined by `-`). Each
+starts with frontmatter:
+
+```markdown
+---
+title: Introducing Helix
+date: 2026-11-20
+description: One or two sentences, shown in the list, the feed and link previews.
+author: The Helix Desktop Project   # optional
+draft: true                         # optional: leave it out to publish
+---
+
+The post, in Markdown. Link to site pages with paths (`/agents`,
+`/docs/gnome-compatibility`); they keep the reader's language prefix.
+```
+
+- `/news` lists the posts, newest first, with dates in the reader's
+  language; `/news/<name>` shows one. Both are prerendered for every post
+  (`modules/news.ts`), even before anything links to it.
+- `/feed.xml` is an Atom feed of the posts (title, date, author,
+  description and link), prerendered by `server/routes/feed.xml.ts`; its
+  absolute links use `HELIX_SITE_URL` (default `https://helixdesktop.org`).
+- Drafts (`draft: true`) are left out of the list, the feed and the
+  generated site; `pnpm dev` still shows them at their URL.
+- Posts are not translated. Translated sites list them under their prefix
+  (`/es/news/…`) with a short notice (`news.englishOnly`), like the docs.
+
+The collection and its schema are in `content.config.ts`. To add a post,
+write the file, run `pnpm dev` to read it at `/news/<name>`, then commit it.
 
 ## Translations
 
@@ -253,9 +290,11 @@ app/
   components/             header, footer, logo, docs search, sidebar menu
   components/content/     prose overrides for docs Markdown (tables)
   components/LanguagePicker.vue  shown once there are two or more languages
-  composables/            light/dark toggle, locale <html> attributes
+  composables/            light/dark toggle, locale <html> attributes, news dates
   error.vue               404 and error page
   pages/index.vue         landing page
+  pages/agents.vue        Agent Access
+  pages/news/             news list and post pages
   pages/docs/[...slug].vue docs page renderer (header, prose, on-page nav)
   layouts/docs.vue        sidebar navigation
   utils/docs-nav.ts       navigation tree clean-up
@@ -264,8 +303,11 @@ public/screenshots/       shell screenshots used on the landing page
 i18n/locales.ts           the site's languages
 i18n/locales/en.json      English messages (the source for translations)
 i18n/i18n.config.ts       vue-i18n options (English fallback)
-content.config.ts         the `docs` collection (source: .spec/)
+content/news/             news posts (Markdown)
+content.config.ts         the `docs` (source: .spec/) and `news` collections
 modules/helix-spec.ts     sync + watch + prerender routes
+modules/news.ts           prerender routes for the news and the feed
+server/routes/feed.xml.ts the Atom feed of the news
 scripts/sync-spec.mjs     spec -> .spec/ transform
 scripts/check-i18n.mjs    hard-coded text and message key check
 Dockerfile, docker/       the image: the generated site behind nginx
