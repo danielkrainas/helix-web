@@ -193,9 +193,12 @@ Build arguments: `SPEC_REF` (branch or tag of the spec, default `main`),
 ## Kubernetes
 
 `charts/helix-web` is a Helm chart that runs the Docker image above: a
-Deployment (two replicas by default, spread across nodes, rolling updates
-with no downtime), a Service on port 80, and optionally an Ingress or a
-Gateway API HTTPRoute, a HorizontalPodAutoscaler and a NetworkPolicy. The pods
+Deployment (two replicas, spread across nodes, rolling updates with no
+downtime), a Service on port 80 and an Ingress for `helixdesktop.org`. It
+expects the cluster to have an ingress controller and cert-manager: the
+Ingress asks the `letsencrypt` ClusterIssuer for a certificate, which
+cert-manager keeps in the `helixdesktop-org-tls` secret. A Gateway API
+HTTPRoute, a HorizontalPodAutoscaler and a NetworkPolicy are optional. The pods
 run as nginx's unprivileged user with a read-only root filesystem (only `/tmp`
 is writable), no service account token, and `/healthz` for the probes.
 
@@ -203,11 +206,13 @@ is writable), no service account token, and `/healthz` for the probes.
 helm install helix-web charts/helix-web \
   --namespace helix-web --create-namespace \
   --set image.tag=0.1.0 \
-  --set ingress.enabled=true --set ingress.className=nginx \
-  --set 'ingress.tls[0].secretName=helixdesktop-org-tls' \
-  --set 'ingress.tls[0].hosts[0]=helixdesktop.org'
+  --set ingress.certManager.clusterIssuer=letsencrypt   # your ClusterIssuer's name
 helm test helix-web --namespace helix-web
 ```
+
+`ingress.className` picks the IngressClass (empty: the cluster's default);
+`ingress.certManager.issuer` uses a namespaced Issuer instead of a
+ClusterIssuer.
 
 The image defaults to `ghcr.io/helixdesktop/web` with the chart's
 `appVersion` as the tag; build and push it with the `docker build` above (or

@@ -45,20 +45,29 @@ service:
   port: 80
   annotations: {}
 
+# The cluster's ingress controller serves the site, and cert-manager issues
+# its certificate: the Ingress carries the cert-manager.io/cluster-issuer
+# annotation for `certManager.clusterIssuer`, and cert-manager stores the
+# certificate in the `tls` secret.
 ingress:
-  enabled: false
+  enabled: true
+  # The IngressClass; empty uses the cluster's default class.
   className: ""
+  certManager:
+    # The ClusterIssuer to request the certificate from (empty: none; set
+    # `issuer` instead for a namespaced Issuer).
+    clusterIssuer: letsencrypt
+    issuer: ""
   annotations: {}
-    # cert-manager.io/cluster-issuer: letsencrypt
   hosts:
     - host: helixdesktop.org
       paths:
         - path: /
           pathType: Prefix
-  tls: []
-  #  - secretName: helixdesktop-org-tls
-  #    hosts:
-  #      - helixdesktop.org
+  tls:
+    - secretName: helixdesktop-org-tls
+      hosts:
+        - helixdesktop.org
 
 # Gateway API alternative to the Ingress.
 httpRoute:

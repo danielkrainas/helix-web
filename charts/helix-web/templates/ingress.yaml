@@ -7,7 +7,15 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "helix-web.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- $annotations := deepCopy (.Values.ingress.annotations | default dict) }}
+  {{- with .Values.ingress.certManager }}
+  {{- if .clusterIssuer }}
+  {{- $_ := set $annotations "cert-manager.io/cluster-issuer" .clusterIssuer }}
+  {{- else if .issuer }}
+  {{- $_ := set $annotations "cert-manager.io/issuer" .issuer }}
+  {{- end }}
+  {{- end }}
+  {{- with $annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
