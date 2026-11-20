@@ -21,5 +21,5 @@ node_modules
 .env.*
 !.env.example
 
-# Local Helm values for the live deployment (not committed)
-.live-values.yaml
+# Packaged Helm charts (deployments/helm/build) and environment values and
+# kubeconfigs (deployments/environments) have .gitignore files of their own.

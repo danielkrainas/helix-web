@@ -13,4 +13,9 @@ dist
 .env.*
 Dockerfile
 .dockerignore
-.live-values.yaml
+# Deployment material is not part of the site, and deployments/environments
+# holds a kubeconfig.
+deployments
+infrastructure
+.github
+Makefile

@@ -1,0 +1,15 @@
+# Everything in here is environment-specific and stays local.
+#
+# An environment is a directory (prod/) holding what deploy.sh and
+# set-context.sh read for it: <release>-values.yaml, kubeconfig.yaml and,
+# optionally, manifests/. The kubeconfig is a cluster credential and a
+# manifests/ directory may hold a registry pull secret, so the whole tree is
+# ignored rather than matched by pattern: nothing under this directory is
+# committed except this file.
+#
+# The chart, in ../helm/charts/helix-web, is where the shape of a deployment
+# lives, with every option documented in its values.yaml; these files only
+# fill it in. For a shareable starting point, see ../README.md rather than
+# un-ignoring one of these.
+*
+!.gitignore

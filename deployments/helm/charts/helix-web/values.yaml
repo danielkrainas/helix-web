@@ -4,13 +4,27 @@
 replicaCount: 2
 
 image:
-  repository: ghcr.io/helixdesktop/web
-  # Defaults to the chart's appVersion.
+  # The name `docker build -t helix-web .` gives the image locally (enough for
+  # kind or minikube with the image loaded). A real deployment sets the
+  # registry path the image is pushed to, e.g.
+  # registry.digitalocean.com/<registry>/helix-web; for helixdesktop.org that
+  # is deployments/environments/prod/helix-web-values.yaml.
+  repository: helix-web
+  # Defaults to the chart's appVersion. The build workflow pushes a moving
+  # `latest` and an immutable `<commit>-spec-<spec commit>` tag.
   tag: ""
   # Takes precedence over the tag when set (e.g. "sha256:…").
   digest: ""
+  # Use Always with a moving tag such as `latest`, so a restarted pod picks up
+  # the newest push.
   pullPolicy: IfNotPresent
 
+# Secrets for pulling from a private registry, e.g. [{name: registry-<name>}].
+# DigitalOcean Kubernetes with the registry integration enabled creates a
+# `registry-<registry name>` secret in each namespace and adds it to the
+# `default` service account only; this chart runs the pods under their own
+# service account, so name the secret here (or set serviceAccount.create:
+# false to use `default`).
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

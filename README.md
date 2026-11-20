@@ -192,35 +192,57 @@ Build arguments: `SPEC_REF` (branch or tag of the spec, default `main`),
 
 ## Kubernetes
 
-`charts/helix-web` is a Helm chart that runs the Docker image above: a
-Deployment (two replicas, spread across nodes, rolling updates with no
+`deployments/helm/charts/helix-web` is a Helm chart that runs the Docker image
+above: a Deployment (two replicas, spread across nodes, rolling updates with no
 downtime), a Service on port 80 and an Ingress for `helixdesktop.org`. It
 expects the cluster to have an ingress controller and cert-manager: the
-Ingress asks the `letsencrypt` ClusterIssuer for a certificate, which
-cert-manager keeps in the `helixdesktop-org-tls` secret. A Gateway API
-HTTPRoute, a HorizontalPodAutoscaler and a NetworkPolicy are optional. The pods
-run as nginx's unprivileged user with a read-only root filesystem (only `/tmp`
-is writable), no service account token, and `/healthz` for the probes.
+Ingress asks the ClusterIssuer in `ingress.certManager.clusterIssuer` for a
+certificate, which cert-manager keeps in the `helixdesktop-org-tls` secret. A
+Gateway API HTTPRoute, a HorizontalPodAutoscaler and a NetworkPolicy are
+optional. The pods run as nginx's unprivileged user with a read-only root
+filesystem (only `/tmp` is writable), no service account token, and
+`/healthz` for the probes.
 
 ```bash
-helm install helix-web charts/helix-web \
+helm install helix-web deployments/helm/charts/helix-web \
   --namespace helix-web --create-namespace \
-  --set image.tag=0.1.0 \
+  --set image.repository=registry.example.com/helix-web --set image.tag=latest \
   --set ingress.certManager.clusterIssuer=letsencrypt   # your ClusterIssuer's name
 helm test helix-web --namespace helix-web
 ```
 
 `ingress.className` picks the IngressClass (empty: the cluster's default);
 `ingress.certManager.issuer` uses a namespaced Issuer instead of a
-ClusterIssuer.
+ClusterIssuer. `image.repository` defaults to `helix-web`, the local name from
+the `docker build` above; set it (and `imagePullSecrets` for a private
+registry) to wherever the image is pushed, with `image.tag` or
+`image.digest`. For a Gateway, set `httpRoute.enabled=true` and
+`httpRoute.parentRefs`. With `replicaCount: 1`, turn off
+`podDisruptionBudget` so node drains aren't blocked. Every option is
+documented in the chart's `values.yaml`. Check changes with `make lint-charts`.
 
-The image defaults to `ghcr.io/helixdesktop/web` with the chart's
-`appVersion` as the tag; build and push it with the `docker build` above (or
-set `image.repository`, `image.tag` or `image.digest`). For a Gateway, set
-`httpRoute.enabled=true` and `httpRoute.parentRefs`. With `replicaCount: 1`,
-turn off `podDisruptionBudget` so node drains aren't blocked. Every option is
-documented in `charts/helix-web/values.yaml`. Check changes with
-`helm lint --strict charts/helix-web`.
+## Deployment
+
+helixdesktop.org runs on DigitalOcean Kubernetes, from images in a
+DigitalOcean Container Registry. [`deployments/README.md`](deployments/README.md)
+has the details; in short:
+
+- **Build and push the image**: run the *Build image* workflow
+  (`.github/workflows/build-image.yml`, manual) from GitHub's Actions tab. It
+  pushes `latest` and an immutable `<commit>-spec-<spec commit>` tag. It needs
+  the `IMAGE_REPOSITORY` repository variable
+  (`registry.digitalocean.com/<registry>/helix-web`) and either the
+  `REGISTRY_USERNAME` and `REGISTRY_PASSWORD` secrets (a DigitalOcean API
+  token in both) or `DOCKER_CONFIG_JSON`.
+- **Bump the chart version** after changing the chart:
+  `make bump-charts-version` (patch; `BUMP=minor`, `BUMP=major` or
+  `BUMP=1.2.3`), which updates `deployments/helm/VERSION` and `Chart.yaml`.
+- **Deploy** from a workstation: `make build-charts`, then `make deploy-prod`
+  (or `make deploy-prod IMAGE_TAG=<tag>` for one build). It uses the ignored
+  `deployments/environments/prod/` directory: `kubeconfig.yaml` for the
+  cluster and `helix-web-values.yaml` for the registry, host and issuer.
+
+`make help` lists the targets and `make check-prereqs` checks for the tools.
 
 ## Layout
 
@@ -246,5 +268,10 @@ content.config.ts         the `docs` collection (source: .spec/)
 modules/helix-spec.ts     sync + watch + prerender routes
 scripts/sync-spec.mjs     spec -> .spec/ transform
 scripts/check-i18n.mjs    hard-coded text and message key check
-charts/helix-web/         Helm chart for Kubernetes deployments
+Dockerfile, docker/       the image: the generated site behind nginx
+Makefile                  chart version, chart packaging and deployment targets
+deployments/helm/         Helm chart (charts/helix-web), VERSION, bump and build scripts
+deployments/environments/ local values and kubeconfig per environment (ignored)
+infrastructure/scripts/   set-context.sh and deploy.sh, used by `make deploy-prod`
+.github/workflows/        build-image.yml: build and push the image (manual)
 ```

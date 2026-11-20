@@ -1,0 +1,7 @@
+# Packaged charts, written here by build-charts.sh and read by
+# infrastructure/scripts/deploy.sh. Derived from charts/, so they are rebuilt
+# rather than committed: a stale .tgz in git is a deploy that silently ships
+# the template you edited last week.
+#
+#   make build-charts
+build/

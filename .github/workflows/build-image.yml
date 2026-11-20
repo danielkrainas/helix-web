@@ -1,0 +1,234 @@
+name: Build image
+
+# Manual only. Nothing here runs on push: production runs the moving `latest`
+# tag, which a pod re-pulls whenever it restarts, so an accidental build would
+# change what helixdesktop.org serves at its next reschedule.
+on:
+  workflow_dispatch:
+    inputs:
+      spec_ref:
+        description: Branch or tag of helixdesktop/spec to build the docs from
+        type: string
+        required: true
+        default: main
+      tag_latest:
+        description: Also move the `latest` tag (what production pulls)
+        type: boolean
+        default: true
+
+# Where the image goes is a property of a deployment, not of this repository,
+# so it is configured rather than written down here. A fork sets its own and
+# owes this file no edit.
+#
+# Required repository configuration (Settings > Secrets and variables > Actions):
+#
+#   vars.IMAGE_REPOSITORY     registry.digitalocean.com/<registry>/helix-web
+#
+# The registry host is derived from IMAGE_REPOSITORY, so there is no second
+# variable that could disagree with it. It has to match image.repository in
+# deployments/environments/prod/helix-web-values.yaml: this workflow decides
+# where images land, the values file where the cluster pulls them from, and
+# nothing checks that the two agree.
+#
+# Then credentials, either shape:
+#
+#   secrets.REGISTRY_USERNAME    + secrets.REGISTRY_PASSWORD
+#   secrets.DOCKER_CONFIG_JSON   a whole docker config, auths and all
+#
+# For DigitalOcean, the simple path is the first: create an API token with
+# read and write access to the registry (Control Panel > API) and store the
+# same token as both REGISTRY_USERNAME and REGISTRY_PASSWORD; DigitalOcean's
+# registry takes a token as either. The second shape fits too:
+# `doctl registry docker-config --read-write` prints a config to paste whole.
+# The config takes precedence when both are present.
+
+permissions:
+  contents: read
+
+# One build at a time: two overlapping runs would both push `latest`, and the
+# loser of that race would be whichever finished first.
+concurrency:
+  group: build-image
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve the target registry
+        id: target
+        env:
+          IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${IMAGE_REPOSITORY}" ]; then
+            echo "::error::Set the IMAGE_REPOSITORY repository variable to the" \
+                 "image path to push, e.g. registry.digitalocean.com/REGISTRY/helix-web." >&2
+            exit 1
+          fi
+
+          # The registry is the first path segment, but only when it looks like
+          # a host. Docker Hub shorthand ("owner/image") has no host at all, and
+          # taking "owner" as one would send the login somewhere that does not
+          # exist.
+          first="${IMAGE_REPOSITORY%%/*}"
+          case "$first" in
+            *.*|*:*|localhost) registry="$first" ;;
+            *)                 registry="docker.io" ;;
+          esac
+
+          echo "image=${IMAGE_REPOSITORY}" >> "$GITHUB_OUTPUT"
+          echo "registry=${registry}" >> "$GITHUB_OUTPUT"
+          echo "Pushing to ${IMAGE_REPOSITORY} via ${registry}"
+
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      # Done in shell rather than with docker/login-action so both credential
+      # shapes go through one path. Either way the result is a config file at
+      # the default location, which is what buildx reads when it pushes.
+      - name: Registry auth
+        env:
+          DOCKER_CONFIG_JSON: ${{ secrets.DOCKER_CONFIG_JSON }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          REGISTRY: ${{ steps.target.outputs.registry }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HOME/.docker"
+
+          if [ -n "${DOCKER_CONFIG_JSON}" ]; then
+            umask 077
+            printf '%s' "${DOCKER_CONFIG_JSON}" > "$HOME/.docker/config.json"
+            echo "Using DOCKER_CONFIG_JSON"
+
+            # A config copied off a workstation is the usual way this goes
+            # wrong: Docker Desktop keeps credentials in the OS keychain and
+            # leaves `auths` empty, so the paste looks right and authenticates
+            # as nobody. Checked here, where the message can say so, rather
+            # than surfacing as a 401 several minutes into a build.
+            python3 - "$REGISTRY" <<'CHECK'
+          import json, os, sys, urllib.parse
+
+          registry = sys.argv[1]
+          path = os.path.expanduser("~/.docker/config.json")
+          try:
+              with open(path) as fh:
+                  cfg = json.load(fh)
+          except json.JSONDecodeError as exc:
+              sys.exit(f"::error::DOCKER_CONFIG_JSON is not valid JSON: {exc}")
+
+          def host(key):
+              key = key if "//" in key else "//" + key
+              return urllib.parse.urlsplit(key).netloc
+
+          wanted = {registry}
+          if registry == "docker.io":
+              wanted |= {"index.docker.io", "registry-1.docker.io"}
+
+          auths = cfg.get("auths") or {}
+          entry = next((v for k, v in auths.items() if host(k) in wanted), None)
+
+          if entry and (entry.get("auth") or entry.get("username")):
+              print(f"config.json has credentials for {registry}")
+          elif cfg.get("credsStore") or cfg.get("credHelpers"):
+              sys.exit(
+                  f"::error::config.json has no inline credentials for {registry}; "
+                  f"it delegates to a credential helper "
+                  f"({cfg.get('credsStore') or 'credHelpers'}) that does not exist "
+                  f"on the runner. Export a config with an `auths` entry instead, "
+                  f"or use REGISTRY_USERNAME/REGISTRY_PASSWORD."
+              )
+          else:
+              sys.exit(f"::error::config.json has no `auths` entry for {registry}.")
+          CHECK
+
+          elif [ -n "${REGISTRY_USERNAME}" ] && [ -n "${REGISTRY_PASSWORD}" ]; then
+            printf '%s' "${REGISTRY_PASSWORD}" \
+              | docker login "${REGISTRY}" --username "${REGISTRY_USERNAME}" --password-stdin
+          else
+            echo "::error::No registry credentials. Set REGISTRY_USERNAME and" \
+                 "REGISTRY_PASSWORD (for DigitalOcean, an API token in both)," \
+                 "or DOCKER_CONFIG_JSON." >&2
+            exit 1
+          fi
+
+      # The image is this repository's commit plus the spec commit the docs
+      # were generated from, so the immutable tag names both. The Dockerfile
+      # clones SPEC_REF by name; resolving it here as well is only for the tag
+      # and the summary.
+      - name: Tags
+        id: tags
+        env:
+          IMAGE: ${{ steps.target.outputs.image }}
+          SHA: ${{ github.sha }}
+          SPEC_REF: ${{ inputs.spec_ref }}
+          TAG_LATEST: ${{ inputs.tag_latest }}
+        run: |
+          set -euo pipefail
+          spec_repo=https://github.com/helixdesktop/spec.git
+
+          # An annotated tag lists its own object and the peeled commit
+          # (`^{}`); the commit is the one that identifies the content.
+          refs=$(git ls-remote "$spec_repo" "refs/heads/${SPEC_REF}" "refs/tags/${SPEC_REF}" "refs/tags/${SPEC_REF}^{}")
+          spec_sha=$(printf '%s\n' "$refs" | awk '$2 ~ /\^\{\}$/ { peeled = $1 } NR == 1 { first = $1 } END { print peeled ? peeled : first }')
+          if [ -z "$spec_sha" ]; then
+            echo "::error::helixdesktop/spec has no branch or tag named '${SPEC_REF}'." >&2
+            exit 1
+          fi
+
+          immutable="${SHA:0:7}-spec-${spec_sha:0:7}"
+          echo "immutable=${immutable}" >> "$GITHUB_OUTPUT"
+          echo "spec_sha=${spec_sha}" >> "$GITHUB_OUTPUT"
+          {
+            echo 'value<<EOF'
+            # Immutable, so a bad deploy has something to roll back to.
+            echo "${IMAGE}:${immutable}"
+            # Moving: what the prod values file deploys.
+            if [ "$TAG_LATEST" = "true" ]; then echo "${IMAGE}:latest"; fi
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.value }}
+          build-args: |
+            SPEC_REF=${{ inputs.spec_ref }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          # The cluster is amd64; building arm64 too would roughly double the
+          # slowest step for an image nothing would pull.
+          platforms: linux/amd64
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # The spec stage clones a branch by name, so its cached layer would
+          # keep serving whatever commit was cloned first. Re-cloning it every
+          # time costs seconds, and when the spec is unchanged the layers after
+          # it still come from the cache.
+          no-cache-filters: spec
+
+      - name: Confirm the push
+        env:
+          IMAGE: ${{ steps.target.outputs.image }}
+          IMMUTABLE: ${{ steps.tags.outputs.immutable }}
+          SPEC_REF: ${{ inputs.spec_ref }}
+          SPEC_SHA: ${{ steps.tags.outputs.spec_sha }}
+        run: |
+          # Reads the manifest back from the registry, so the job only passes
+          # if the tag actually resolves rather than merely having been
+          # uploaded.
+          docker buildx imagetools inspect "${IMAGE}:${IMMUTABLE}"
+
+          {
+            echo "pushed \`${IMAGE}:${IMMUTABLE}\` (spec \`${SPEC_REF}\` at \`${SPEC_SHA:0:7}\`)"
+            echo
+            echo "Deploy it with \`make deploy-prod IMAGE_TAG=${IMMUTABLE}\`, or restart"
+            echo "the Deployment to pick up \`latest\`."
+          } >> "$GITHUB_STEP_SUMMARY"
