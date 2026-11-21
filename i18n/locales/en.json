@@ -149,23 +149,20 @@
     "install": {
       "eyebrow": "Get Helix",
       "title": "Install Helix in three steps",
-      "lead": "Helix has ready-made packages for Ubuntu and Debian, and also for Fedora (.rpm) and Arch Linux, for regular PCs and for ARM computers (Arch: PCs only). It sits next to your current desktop and doesn’t replace it.",
-      "download": {
-        "title": "Download",
-        "text": "From the latest releases, download three packages: {desktop} and {full}, then {apps}, which has releases of its own.",
-        "desktopButton": "Helix desktop",
-        "appsButton": "Helix apps"
-      },
+      "lead": "Helix has ready-made packages for Ubuntu and Debian, Fedora and Arch Linux, for regular PCs and for ARM computers (Arch: PCs only), from its own package repository. It sits next to your current desktop and doesn’t replace it.",
       "install": {
         "title": "Install",
-        "text": "Open a terminal in the folder you saved them to (usually Downloads) and install all three together. On Ubuntu or Debian:",
-        "commandTitle": "Ubuntu and Debian",
-        "commandLabel": "Install command for Ubuntu and Debian",
+        "text": "Install {full}. It brings in {desktop}, the apps ({apps}) and everything else Helix needs.",
+        "commandTitle": "Install Helix ({manager})",
+        "commandLabel": "Command to install Helix with {manager}",
         "copy": "Copy",
         "copied": "Copied",
         "copiedAnnouncement": "Command copied",
-        "otherDistros": "On Fedora or Arch, install the same three packages with your package manager; the {guide} has the details.",
-        "guideLink": "full install guide"
+        "guideLink": "full install guide",
+        "updates": "From now on, Helix updates along with the rest of your system.",
+        "manual": "Prefer not to add a repository? Download the packages from the {desktopReleases} and {appsReleases} instead; the {guide} has the details.",
+        "desktopReleases": "desktop releases",
+        "appsReleases": "apps releases"
       },
       "login": {
         "title": "Log out and pick Helix",
@@ -177,7 +174,7 @@
       },
       "greeter": {
         "summary": "For enthusiasts: use Helix’s own login screen",
-        "intro": "Optional, and for Ubuntu and Debian only for now. Install {package} (it brings in greetd), then switch login screens and restart:",
+        "intro": "Optional, and for Ubuntu and Debian only for now. Install {package} from the Helix repository (it brings in greetd), then switch login screens and restart:",
         "switchLabel": "Commands to switch to the Helix login screen",
         "back": "To switch back, or if the login screen doesn’t appear (press Ctrl+Alt+F3 for a text login first):",
         "backLabel": "Commands to switch back to GDM",
@@ -192,6 +189,19 @@
         "text": "The full guide covers every step, and you can ask a question or report a problem on GitHub.",
         "guide": "Full install guide",
         "ask": "Ask or report a problem"
+      },
+      "managers": {
+        "apt": "Ubuntu, Debian",
+        "dnf": "Fedora, RHEL",
+        "pacman": "Arch Linux"
+      },
+      "repo": {
+        "title": "Add the Helix repository",
+        "text": "Pick your package manager, then run these commands once in a terminal. They add the repository’s signing key and the repository itself, so your system can install Helix and keep it up to date.",
+        "choose": "Package manager",
+        "commandTitle": "Add the repository ({manager})",
+        "commandLabel": "Commands to add the Helix repository with {manager}",
+        "pacmanNote": "The fingerprint is the repository’s signing key; check that it matches the one shown at packages.dakr.io/helix before you trust it."
       }
     },
     "tour": {

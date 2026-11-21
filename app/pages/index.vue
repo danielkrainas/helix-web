@@ -72,9 +72,84 @@ const repoCards = [
 // the same in every language, so they live here rather than in the messages.
 const packages = { desktop: 'helix-desktop', full: 'helix-desktop-full', apps: 'helix-apps', greeter: 'helix-greeter' }
 const nvidiaOption = 'nvidia-drm.modeset=1'
-const installCommand = 'sudo apt install ./helix-desktop_*.deb ./helix-desktop-full_*.deb ./helix-apps_*.deb'
-const installLines = ['sudo apt install ./helix-desktop_*.deb \\\n    ./helix-desktop-full_*.deb ./helix-apps_*.deb']
-const greeterOnLines = ['sudo systemctl disable gdm.service', 'sudo systemctl enable --force greetd.service', 'sudo reboot']
+// Helix's package repository (omnirelease at packages.dakr.io, group
+// "helix": the desktop, apps and web releases), one entry per package
+// manager: the commands to add it once, then to install. Updates then come
+// with the system's own updates.
+const repoHost = 'https://packages.dakr.io'
+const keyFingerprint = '2C024E90BBC12BB09BC6749E68EF50830CA6B215'
+const managers = [
+  {
+    id: 'apt',
+    name: 'apt',
+    distros: 'home.install.managers.apt',
+    setup: [
+      'sudo install -d -m 0755 /etc/apt/keyrings',
+      `curl -fsSL ${repoHost}/key.asc | sudo tee /etc/apt/keyrings/omnirelease.asc >/dev/null`,
+      `echo "deb [signed-by=/etc/apt/keyrings/omnirelease.asc] ${repoHost}/helix/deb stable main" | sudo tee /etc/apt/sources.list.d/helix.list`,
+      'sudo apt update',
+    ],
+    install: ['sudo apt install helix-desktop-full'],
+  },
+  {
+    id: 'dnf',
+    name: 'dnf',
+    distros: 'home.install.managers.dnf',
+    setup: [
+      `sudo curl -fsSL -o /etc/yum.repos.d/helix.repo ${repoHost}/helix/rpm/helix.repo`,
+    ],
+    install: ['sudo dnf install helix-desktop-full'],
+  },
+  {
+    id: 'pacman',
+    name: 'pacman',
+    distros: 'home.install.managers.pacman',
+    setup: [
+      `curl -fsSL ${repoHost}/key.asc | sudo pacman-key --add -`,
+      `sudo pacman-key --lsign-key ${keyFingerprint}`,
+      `printf '\\n[helix]\\nSigLevel = PackageOptional DatabaseRequired TrustedOnly\\nServer = ${repoHost}/helix/arch/$arch\\n' | sudo tee -a /etc/pacman.conf`,
+    ],
+    install: ['sudo pacman -Syu helix-desktop-full'],
+  },
+] as const
+type ManagerId = (typeof managers)[number]['id']
+const managerId = ref<ManagerId>('apt')
+const manager = computed(() => managers.find(m => m.id === managerId.value) ?? managers[0])
+const tabRefs = ref<HTMLButtonElement[]>([])
+
+// Remember the choice on this device only; the page works without it.
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem('helix-package-manager')
+    if (managers.some(m => m.id === saved)) {
+      managerId.value = saved as ManagerId
+    }
+  }
+  catch { /* storage unavailable */ }
+})
+function chooseManager(id: ManagerId) {
+  managerId.value = id
+  try {
+    localStorage.setItem('helix-package-manager', id)
+  }
+  catch { /* storage unavailable */ }
+}
+// Arrow keys move between the tabs (WAI-ARIA tabs pattern).
+function onTabKey(event: KeyboardEvent, index: number) {
+  const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+  const to = event.key === 'Home' ? 0 : event.key === 'End' ? managers.length - 1 : (index + step + managers.length) % managers.length
+  if (step === 0 && event.key !== 'Home' && event.key !== 'End') {
+    return
+  }
+  const target = managers[to]
+  if (!target) {
+    return
+  }
+  event.preventDefault()
+  chooseManager(target.id)
+  tabRefs.value[to]?.focus()
+}
+const greeterOnLines = ['sudo apt install helix-greeter', 'sudo systemctl disable gdm.service', 'sudo systemctl enable --force greetd.service', 'sudo reboot']
 // A short Agent Access session (helix-agent, contracts/agent-access/cli.md).
 const agentCommand = 'helix-agent'
 const agentLogCommand = 'helix-agent log'
@@ -86,15 +161,16 @@ const agentLines = [
 ]
 const greeterOffLines = ['sudo systemctl disable greetd.service', 'sudo systemctl enable --force gdm.service', 'sudo reboot']
 
-const copied = ref(false)
+// Which box's commands were just copied ('setup' or 'install').
+const copied = ref<'' | 'setup' | 'install'>('')
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
-async function copyCommand() {
+async function copyCommands(which: 'setup' | 'install') {
   try {
-    await navigator.clipboard.writeText(installCommand)
-    copied.value = true
+    await navigator.clipboard.writeText(manager.value[which].join('\n'))
+    copied.value = which
     clearTimeout(copiedTimer)
-    copiedTimer = setTimeout(() => { copied.value = false }, 2000)
+    copiedTimer = setTimeout(() => { copied.value = '' }, 2000)
   }
   catch {
     // Clipboard unavailable (e.g. insecure context): the command stays selectable.
@@ -254,46 +330,78 @@ async function copyCommand() {
           <div class="column is-7-desktop" style="min-width: 0">
             <ol class="install-steps">
               <li>
-                <h3>{{ t('home.install.download.title') }}</h3>
-                <i18n-t keypath="home.install.download.text" tag="p">
-                  <template #desktop>
-                    <strong>{{ packages.desktop }}</strong>
-                  </template>
+                <h3 id="install-repo-title">{{ t('home.install.repo.title') }}</h3>
+                <p>{{ t('home.install.repo.text') }}</p>
+                <div class="manager-tabs" role="tablist" :aria-label="t('home.install.repo.choose')">
+                  <button
+                    v-for="(m, i) in managers"
+                    :id="`manager-tab-${m.id}`"
+                    :key="m.id"
+                    ref="tabRefs"
+                    type="button"
+                    role="tab"
+                    class="manager-tab"
+                    :class="{ 'is-active': m.id === managerId }"
+                    :aria-selected="m.id === managerId"
+                    :aria-controls="`manager-panel`"
+                    :tabindex="m.id === managerId ? 0 : -1"
+                    @click="chooseManager(m.id)"
+                    @keydown="onTabKey($event, i)"
+                  >
+                    <code>{{ m.name }}</code>
+                    <span class="manager-distros">{{ t(m.distros) }}</span>
+                  </button>
+                </div>
+                <div id="manager-panel" role="tabpanel" :aria-labelledby="`manager-tab-${managerId}`">
+                  <div class="command-box">
+                    <div class="command-bar">
+                      <span>{{ t('home.install.repo.commandTitle', { manager: manager.name }) }}</span>
+                      <button type="button" class="copy-button" @click="copyCommands('setup')">
+                        <span class="icon"><Icon :name="copied === 'setup' ? 'lucide:check' : 'lucide:copy'" /></span>
+                        <span>{{ t(copied === 'setup' ? 'home.install.install.copied' : 'home.install.install.copy') }}</span>
+                      </button>
+                    </div>
+                    <TerminalCommands :commands="[...manager.setup]" :label="t('home.install.repo.commandLabel', { manager: manager.name })" />
+                  </div>
+                  <p v-if="manager.id === 'pacman'" class="is-size-7 has-text-weak mt-2">
+                    {{ t('home.install.repo.pacmanNote') }}
+                  </p>
+                </div>
+              </li>
+              <li>
+                <h3>{{ t('home.install.install.title') }}</h3>
+                <i18n-t keypath="home.install.install.text" tag="p">
                   <template #full>
                     <strong>{{ packages.full }}</strong>
+                  </template>
+                  <template #desktop>
+                    <strong>{{ packages.desktop }}</strong>
                   </template>
                   <template #apps>
                     <strong>{{ packages.apps }}</strong>
                   </template>
                 </i18n-t>
-                <div class="buttons mt-3">
-                  <a :href="links.desktopReleases" class="button is-primary" target="_blank" rel="noopener">
-                    <span class="icon"><Icon name="lucide:package" /></span>
-                    <span>{{ t('home.install.download.desktopButton') }}</span>
-                  </a>
-                  <a :href="links.appsReleases" class="button" target="_blank" rel="noopener">
-                    <span class="icon"><Icon name="lucide:layout-grid" /></span>
-                    <span>{{ t('home.install.download.appsButton') }}</span>
-                  </a>
-                </div>
-              </li>
-              <li>
-                <h3>{{ t('home.install.install.title') }}</h3>
-                <p>
-                  {{ t('home.install.install.text') }}
-                </p>
                 <div class="command-box">
                   <div class="command-bar">
-                    <span>{{ t('home.install.install.commandTitle') }}</span>
-                    <button type="button" class="copy-button" @click="copyCommand">
-                      <span class="icon"><Icon :name="copied ? 'lucide:check' : 'lucide:copy'" /></span>
-                      <span>{{ t(copied ? 'home.install.install.copied' : 'home.install.install.copy') }}</span>
+                    <span>{{ t('home.install.install.commandTitle', { manager: manager.name }) }}</span>
+                    <button type="button" class="copy-button" @click="copyCommands('install')">
+                      <span class="icon"><Icon :name="copied === 'install' ? 'lucide:check' : 'lucide:copy'" /></span>
+                      <span>{{ t(copied === 'install' ? 'home.install.install.copied' : 'home.install.install.copy') }}</span>
                     </button>
                   </div>
-                  <TerminalCommands :commands="installLines" :label="t('home.install.install.commandLabel')" />
+                  <TerminalCommands :commands="[...manager.install]" :label="t('home.install.install.commandLabel', { manager: manager.name })" />
                   <span class="is-sr-only" aria-live="polite">{{ copied ? t('home.install.install.copiedAnnouncement') : '' }}</span>
                 </div>
-                <i18n-t keypath="home.install.install.otherDistros" tag="p" class="is-size-7 has-text-weak mt-2">
+                <p class="mt-2">
+                  {{ t('home.install.install.updates') }}
+                </p>
+                <i18n-t keypath="home.install.install.manual" tag="p" class="is-size-7 has-text-weak mt-2">
+                  <template #desktopReleases>
+                    <a :href="links.desktopReleases" target="_blank" rel="noopener" class="has-text-accent">{{ t('home.install.install.desktopReleases') }}</a>
+                  </template>
+                  <template #appsReleases>
+                    <a :href="links.appsReleases" target="_blank" rel="noopener" class="has-text-accent">{{ t('home.install.install.appsReleases') }}</a>
+                  </template>
                   <template #guide>
                     <a :href="`${links.desktop}#installing-and-using-helix`" target="_blank" rel="noopener" class="has-text-accent">{{ t('home.install.install.guideLink') }}</a>
                   </template>
